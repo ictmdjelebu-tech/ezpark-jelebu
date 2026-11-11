@@ -1,0 +1,497 @@
+{
+  "users": [
+    {
+      "id": "usr-000",
+      "full_name": "Insp. Rosli bin Daud",
+      "email": "rosli.enforce@mdj.gov.my",
+      "phone_number": "019-2244881",
+      "role": "ENFORCEMENT_CHIEF",
+      "badge_number": "KOP-001",
+      "department": "Jabatan Penguatkuasaan & Keselamatan",
+      "is_active": true
+    },
+    {
+      "id": "usr-001",
+      "full_name": "Azlan bin Baharom",
+      "email": "azlan.ict@mdj.gov.my",
+      "phone_number": "019-3382910",
+      "role": "SUPERADMIN_ICT",
+      "badge_number": "ICT-01",
+      "department": "Bahagian Teknologi Maklumat",
+      "is_active": true
+    },
+    {
+      "id": "usr-002",
+      "full_name": "Zulkifli bin Ismail",
+      "email": "zulkifli.op@mdj.gov.my",
+      "phone_number": "013-4491022",
+      "role": "ENFORCEMENT_OFFICER",
+      "badge_number": "KOP-104",
+      "department": "Unit Operasi Penguatkuasaan",
+      "is_active": true
+    },
+    {
+      "id": "usr-003",
+      "full_name": "Siti Norhaliza binti Ramli",
+      "email": "norhaliza.saman@mdj.gov.my",
+      "phone_number": "017-8891230",
+      "role": "ENFORCEMENT_CLERK",
+      "badge_number": "ADM-012",
+      "department": "Kaunter Penguatkuasaan & Saman",
+      "is_active": true
+    },
+    {
+      "id": "usr-004",
+      "full_name": "Faridah binti Mansor",
+      "email": "faridah.kew@mdj.gov.my",
+      "phone_number": "012-7719283",
+      "role": "FINANCE_OFFICER",
+      "badge_number": "KEW-004",
+      "department": "Bahagian Perakaunan & Kewangan",
+      "is_active": true
+    },
+    {
+      "id": "usr-005",
+      "full_name": "Dato' Haji Kamaruddin bin Othman",
+      "email": "kjd@mdj.gov.my",
+      "phone_number": "019-2211990",
+      "role": "HEAD_OF_DEPARTMENT",
+      "badge_number": "KJD-01",
+      "department": "Pejabat Yang Dipertua MDJ",
+      "is_active": true
+    }
+  ],
+  "zones": [
+    {
+      "id": "zone-a",
+      "zone_code": "ZON_A",
+      "zone_name": "Zon A - Pekan Kuala Klawang",
+      "rate_first_hour": 0.6,
+      "rate_subsequent_hour": 0.6,
+      "daily_pass_rate": 4,
+      "monthly_pass_rate": 60,
+      "total_bays": 420,
+      "operating_hours": "08:00 AM - 05:00 PM (Isnin - Jumaat)",
+      "free_weekends": true,
+      "center_lat": 2.938812,
+      "center_lng": 102.07124,
+      "radius_meters": 1500,
+      "is_active": true
+    },
+    {
+      "id": "zone-b",
+      "zone_code": "ZON_B",
+      "zone_name": "Zon B - Simpang Pertang & Titi",
+      "rate_first_hour": 0.4,
+      "rate_subsequent_hour": 0.4,
+      "daily_pass_rate": 3,
+      "monthly_pass_rate": 45,
+      "total_bays": 280,
+      "operating_hours": "08:00 AM - 05:00 PM (Isnin - Jumaat)",
+      "free_weekends": true,
+      "center_lat": 2.962104,
+      "center_lng": 102.21589,
+      "radius_meters": 1200,
+      "is_active": true
+    },
+    {
+      "id": "zone-khas",
+      "zone_code": "ZON_KHAS",
+      "zone_name": "Zon Khas - Hospital Jelebu & Stesen Bas",
+      "rate_first_hour": 0.8,
+      "rate_subsequent_hour": 0.8,
+      "daily_pass_rate": 6,
+      "monthly_pass_rate": 80,
+      "total_bays": 150,
+      "operating_hours": "Setiap Hari (Termasuk Hujung Minggu)",
+      "free_weekends": false,
+      "center_lat": 2.941098,
+      "center_lng": 102.08311,
+      "radius_meters": 800,
+      "is_active": true
+    },
+    {
+      "id": "zone-1794377750104",
+      "zone_code": "ZON_D",
+      "zone_name": "Zon D - Pekan Chennah",
+      "rate_first_hour": 0.4,
+      "rate_subsequent_hour": 0.4,
+      "daily_pass_rate": 2.4000000000000004,
+      "monthly_pass_rate": 60,
+      "total_bays": 100,
+      "operating_hours": "08:00 AM - 05:00 PM (Isnin - Jumaat)",
+      "free_weekends": true,
+      "center_lat": 2.95,
+      "center_lng": 102.1,
+      "radius_meters": 1000,
+      "is_active": true
+    }
+  ],
+  "uuk_offenses": [
+    {
+      "id": "uuk-5",
+      "code": "UUK 5",
+      "title": "Meletak kenderaan tanpa membayar caj parkir sah",
+      "fine_amount": 30,
+      "statutory_act": "Perintah Tempat Letak Kereta (MDJ) 2026 / Akta 333"
+    },
+    {
+      "id": "uuk-8",
+      "code": "UUK 8",
+      "title": "Meletak kenderaan di luar garisan petak yang ditandakan",
+      "fine_amount": 50,
+      "statutory_act": "Perintah Tempat Letak Kereta (MDJ) 2026 / Akta 333"
+    },
+    {
+      "id": "uuk-10",
+      "code": "UUK 10",
+      "title": "Meletak kenderaan secara melintang atau melawan arah lalu lintas",
+      "fine_amount": 50,
+      "statutory_act": "Perintah Tempat Letak Kereta (MDJ) 2026 / Akta 333"
+    },
+    {
+      "id": "uuk-12",
+      "code": "UUK 12",
+      "title": "Meletak kenderaan di petak khas OKU tanpa pelekat sah",
+      "fine_amount": 100,
+      "statutory_act": "Perintah Tempat Letak Kereta (MDJ) 2026 / Akta 333"
+    },
+    {
+      "id": "uuk-15",
+      "code": "UUK 15",
+      "title": "Menghalang pili bomba, petak bomba atau laluan kecemasan",
+      "fine_amount": 100,
+      "statutory_act": "Perintah Tempat Letak Kereta (MDJ) 2026 / Akta 333"
+    }
+  ],
+  "vehicles": [
+    {
+      "id": "veh-001",
+      "plate_number": "NDJ 8821",
+      "brand": "Proton",
+      "model": "Persona",
+      "color": "Hitam",
+      "vehicle_type": "Saloon",
+      "driver_name": "Pemandu Contoh MDJ"
+    },
+    {
+      "id": "veh-002",
+      "plate_number": "NDB 4210",
+      "brand": "Perodua",
+      "model": "Myvi",
+      "color": "Putih",
+      "vehicle_type": "Hatchback",
+      "driver_name": "Pemandu Contoh 2"
+    }
+  ],
+  "parking_sessions": [
+    {
+      "id": "ses-1794384803752",
+      "session_code": "EZP-803752-284",
+      "plate_number": "NDB 4210",
+      "zone_code": "ZON_A",
+      "start_time": "2026-11-11T08:13:23.752Z",
+      "end_time": "2026-11-11T09:13:23.752Z",
+      "duration_minutes": 60,
+      "total_amount": 0.6,
+      "status": "ACTIVE",
+      "hitpay_reference_id": "HITPAY-SIM-1794384803752"
+    },
+    {
+      "id": "ses-101",
+      "session_code": "EZP-20261111-8891",
+      "plate_number": "NDJ 8821",
+      "zone_code": "ZON_A",
+      "start_time": "2026-11-11T04:07:02.352Z",
+      "end_time": "2026-11-11T05:07:02.365Z",
+      "duration_minutes": 60,
+      "total_amount": 0.6,
+      "status": "ACTIVE",
+      "hitpay_reference_id": "HITPAY-PAY-77102"
+    }
+  ],
+  "compounds": [
+    {
+      "id": "comp-1794384803772",
+      "notice_number": "MDJ-K-2026-4533",
+      "plate_number": "WYY 4091",
+      "brand": "Toyota",
+      "model": "Vios",
+      "color": "Tidak Dinyatakan",
+      "zone_code": "ZON_A",
+      "location_description": "Jalan Bandar, Kuala Klawang",
+      "uuk_code": "UUK 5",
+      "uuk_title": "Meletak kenderaan tanpa membayar caj parkir sah",
+      "fine_amount": 30,
+      "status": "PAID_HITPAY",
+      "officer_badge": "KOP-001",
+      "gps_lat": 2.938812,
+      "gps_lng": 102.07124,
+      "evidence_3_photos": {
+        "front_plate": "/uploads/evidence/MDJ-K-2026-4533_front.jpg",
+        "windshield": "/uploads/evidence/MDJ-K-2026-4533_windshield.jpg",
+        "rear_and_bay": "/uploads/evidence/MDJ-K-2026-4533_rear.jpg"
+      },
+      "s90a_cert_hash": "0fe7e4a314124c4465cc72ae6c7e4742654e1092b805944278856a3e89c4df07",
+      "issued_at": "2026-11-11T08:13:23.771Z",
+      "due_date": "2026-11-25T08:13:23.771Z",
+      "offender_profile": null,
+      "paid_at": "2026-11-11T08:13:23.777Z",
+      "payment_method": "DUITNOW_QR_HITPAY",
+      "hitpay_reference_id": "HITPAY-CMP-1794384803777"
+    },
+    {
+      "id": "comp-1794379881716",
+      "notice_number": "MDJ-K-2026-4541",
+      "plate_number": "NDJ8821",
+      "brand": "Toyota",
+      "model": "Vios",
+      "color": "Perak",
+      "zone_code": "ZON_A",
+      "location_description": "Jalan Dato' Ombi, Kuala Klawang (Petak 14)",
+      "uuk_code": "UUK 12",
+      "uuk_title": "Meletak kenderaan di petak khas OKU tanpa pelekat sah",
+      "fine_amount": 100,
+      "status": "UNPAID",
+      "officer_badge": "KOP-104",
+      "gps_lat": 2.938812,
+      "gps_lng": 102.07124,
+      "evidence_3_photos": {
+        "front_plate": "/uploads/evidence/MDJ-K-2026-4541_front.jpg",
+        "windshield": "/uploads/evidence/MDJ-K-2026-4541_windshield.jpg",
+        "rear_and_bay": "/uploads/evidence/MDJ-K-2026-4541_rear.jpg"
+      },
+      "s90a_cert_hash": "a99abfa9aa8bfb928dda8fdb7e128fee38050007dfb78e63d94646720fb8dccd",
+      "issued_at": "2026-11-11T06:51:21.716Z",
+      "due_date": "2026-11-25T06:51:21.716Z",
+      "offender_profile": null
+    },
+    {
+      "id": "comp-1794379780326",
+      "notice_number": "MDJ-K-2026-8375",
+      "plate_number": "NDJ8821",
+      "brand": "Toyota",
+      "model": "Vios",
+      "color": "Perak",
+      "zone_code": "ZON_A",
+      "location_description": "Jalan Dato' Ombi, Kuala Klawang (Petak 14)",
+      "uuk_code": "UUK 5",
+      "uuk_title": "Meletak kenderaan tanpa membayar caj parkir sah",
+      "fine_amount": 30,
+      "status": "UNPAID",
+      "officer_badge": "KOP-104",
+      "gps_lat": 2.938812,
+      "gps_lng": 102.07124,
+      "evidence_3_photos": {
+        "front_plate": "/uploads/evidence/MDJ-K-2026-8375_front.jpg",
+        "windshield": "/uploads/evidence/MDJ-K-2026-8375_windshield.jpg",
+        "rear_and_bay": "/uploads/evidence/MDJ-K-2026-8375_rear.jpg"
+      },
+      "s90a_cert_hash": "7302b5438f5263ca87085f8e538ff0fd0854afd7b105dfbb8c383ced02855398",
+      "issued_at": "2026-11-11T06:49:40.325Z",
+      "due_date": "2026-11-25T06:49:40.325Z",
+      "offender_profile": null
+    },
+    {
+      "id": "comp-001",
+      "notice_number": "MDJ-K-2026-9921",
+      "plate_number": "WYY 4091",
+      "brand": "Toyota",
+      "model": "Vios",
+      "color": "Perak",
+      "zone_code": "ZON_A",
+      "location_description": "Jalan Dato' Ombi, Petak No. 14, Pekan Kuala Klawang",
+      "uuk_code": "UUK 5",
+      "fine_amount": 30,
+      "status": "UNPAID",
+      "officer_id": "usr-002",
+      "officer_badge": "KOP-104",
+      "gps_lat": 2.938812,
+      "gps_lng": 102.07124,
+      "evidence_3_photos": {
+        "front_plate": "/uploads/evidence/9921_front.jpg",
+        "windshield": "/uploads/evidence/9921_windshield.jpg",
+        "rear_and_bay": "/uploads/evidence/9921_rear.jpg"
+      },
+      "s90a_cert_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "issued_at": "2026-11-11T10:25:00.000Z",
+      "due_date": "2026-11-25T10:25:00.000Z",
+      "offender_profile": null
+    },
+    {
+      "id": "comp-002",
+      "notice_number": "MDJ-K-2026-9880",
+      "plate_number": "NDJ 5512",
+      "brand": "Proton",
+      "model": "Saga",
+      "color": "Merah",
+      "zone_code": "ZON_B",
+      "location_description": "Pekan Titi, Petak No. 04",
+      "uuk_code": "UUK 8",
+      "fine_amount": 50,
+      "status": "PAID_HITPAY",
+      "officer_id": "usr-002",
+      "officer_badge": "KOP-104",
+      "gps_lat": 2.962104,
+      "gps_lng": 102.21589,
+      "evidence_3_photos": {
+        "front_plate": "/uploads/evidence/9880_front.jpg",
+        "windshield": "/uploads/evidence/9880_windshield.jpg",
+        "rear_and_bay": "/uploads/evidence/9880_rear.jpg"
+      },
+      "s90a_cert_hash": "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e",
+      "issued_at": "2026-11-10T14:15:00.000Z",
+      "due_date": "2026-11-24T14:15:00.000Z",
+      "offender_profile": {
+        "full_name": "MOHD FAIZAL BIN ABDULLAH",
+        "ic_number": "840512-05-5231",
+        "phone_number": "013-6821902",
+        "mailing_address": "No. 14, Taman Jelebu Indah, 71600 Kuala Klawang, Negeri Sembilan",
+        "data_source": "COUNTER_PRESENCE",
+        "completed_at": "2026-11-10T16:00:00.000Z"
+      }
+    }
+  ],
+  "discount_campaign": {
+    "campaign_name": "Kempen Diskaun Awal Kompaun MDJ",
+    "is_enabled": false,
+    "phase1_hours": 24,
+    "phase1_percent": 70,
+    "phase2_days": 14,
+    "phase2_percent": 50,
+    "approval_reference": "MDJ/KJD/MESY-BIL.4/2026",
+    "updated_at": "2026-11-11T04:22:02.366Z"
+  },
+  "hitpay_transactions": [
+    {
+      "id": "hit-001",
+      "transaction_id": "STL-HITPAY-88219",
+      "date": "2026-11-10",
+      "total_transactions": 640,
+      "parking_collection": 3840,
+      "compound_collection": 1200,
+      "gateway_fee": 50.4,
+      "net_amount": 4989.6,
+      "status": "SETTLED"
+    }
+  ],
+  "audit_logs": [
+    {
+      "id": 15,
+      "action": "PAY_COMPOUND",
+      "user": "DRIVER_HITPAY",
+      "details": "Kompaun MDJ-K-2026-4533 (WYY 4091) bernilai RM30 telah berjaya dibayar.",
+      "timestamp": "2026-11-11T08:13:23.777Z"
+    },
+    {
+      "id": 14,
+      "action": "ISSUE_COMPOUND",
+      "user": "KOP-001",
+      "details": "Notis Kompaun dikeluarkan: MDJ-K-2026-4533 (WYY 4091) - UUK 5",
+      "timestamp": "2026-11-11T08:13:23.772Z"
+    },
+    {
+      "id": 13,
+      "action": "START_PARKING",
+      "user": "DRIVER",
+      "details": "Sesi parkir dimulakan: EZP-803752-284 (NDB 4210) - RM0.6",
+      "timestamp": "2026-11-11T08:13:23.752Z"
+    },
+    {
+      "id": 12,
+      "action": "STAFF_LOGIN",
+      "user": "SUPERADMIN_ICT",
+      "details": "Log masuk pegawai: Azlan bin Baharom (ICT-01)",
+      "timestamp": "2026-11-11T08:02:20.291Z"
+    },
+    {
+      "id": 11,
+      "action": "STAFF_LOGIN",
+      "user": "SUPERADMIN_ICT",
+      "details": "Log masuk pegawai: Azlan bin Baharom (ICT-01)",
+      "timestamp": "2026-11-11T07:45:23.747Z"
+    },
+    {
+      "id": 10,
+      "action": "STAFF_LOGIN",
+      "user": "SUPERADMIN_ICT",
+      "details": "Log masuk pegawai: Azlan bin Baharom (ICT-01)",
+      "timestamp": "2026-11-11T07:26:54.350Z"
+    },
+    {
+      "id": 9,
+      "action": "STAFF_LOGIN",
+      "user": "SUPERADMIN_ICT",
+      "details": "Log masuk pegawai: Azlan bin Baharom (ICT-01)",
+      "timestamp": "2026-11-11T07:23:12.812Z"
+    },
+    {
+      "id": 8,
+      "action": "STAFF_LOGIN",
+      "user": "ENFORCEMENT_CHIEF",
+      "details": "Log masuk pegawai: Insp. Rosli bin Daud (KOP-001)",
+      "timestamp": "2026-11-11T07:18:21.788Z"
+    },
+    {
+      "id": 7,
+      "action": "STAFF_LOGIN",
+      "user": "SUPERADMIN_ICT",
+      "details": "Log masuk pegawai: Azlan bin Baharom (ICT-01)",
+      "timestamp": "2026-11-11T07:17:26.757Z"
+    },
+    {
+      "id": 6,
+      "action": "STAFF_LOGIN",
+      "user": "SUPERADMIN_ICT",
+      "details": "Log masuk pegawai: Azlan bin Baharom (ICT-01)",
+      "timestamp": "2026-11-11T07:17:09.730Z"
+    },
+    {
+      "id": 5,
+      "action": "STAFF_LOGIN",
+      "user": "SUPERADMIN_ICT",
+      "details": "Log masuk pegawai: Azlan bin Baharom (ICT-01)",
+      "timestamp": "2026-11-11T07:16:34.020Z"
+    },
+    {
+      "id": 4,
+      "action": "ISSUE_COMPOUND",
+      "user": "KOP-104",
+      "details": "Notis Kompaun dikeluarkan: MDJ-K-2026-4541 (NDJ8821) - UUK 12",
+      "timestamp": "2026-11-11T06:51:21.716Z"
+    },
+    {
+      "id": 3,
+      "action": "ISSUE_COMPOUND",
+      "user": "KOP-104",
+      "details": "Notis Kompaun dikeluarkan: MDJ-K-2026-8375 (NDJ8821) - UUK 5",
+      "timestamp": "2026-11-11T06:49:40.327Z"
+    },
+    {
+      "id": 2,
+      "action": "ADD_ZONE",
+      "user": "SUPERADMIN_ICT",
+      "details": "Zon baharu ditambah: ZON_D (Zon D - Pekan Chennah)",
+      "timestamp": "2026-11-11T06:15:50.105Z"
+    },
+    {
+      "id": 1,
+      "action": "SYSTEM_INITIALIZE",
+      "user": "SYSTEM",
+      "details": "Sistem EZ Park - Jelebu dimulakan dengan konfigurasi warta MDJ.",
+      "timestamp": "2026-11-11T04:22:02.366Z"
+    }
+  ],
+  "compound_receipt_settings": {
+    "paper_size": "58mm",
+    "include_logo": true,
+    "council_name": "MAJLIS DAERAH JELEBU",
+    "notice_title": "NOTIS PEMBERITAHUAN KESALAHAN TEMPAT LETAK KERETA",
+    "statutory_act": "Di Bawah Perintah Tempat Letak Kereta (MDJ) 2026",
+    "payment_due_days": 14,
+    "include_duitnow_qr": true,
+    "footer_warning": "Sila jelaskan kompaun ini dalam tempoh 14 hari bagi mengelakkan tindakan mahkamah atau senarai hitam pendaftaran kenderaan.",
+    "counter_address": "Kaunter Bayaran Utama, Majlis Daerah Jelebu, 71600 Kuala Klawang",
+    "contact_phone": "06-613 6233 / 06-613 6234"
+  }
+}

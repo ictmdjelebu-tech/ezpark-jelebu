@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>EZ Park Penguatkuasa | Majlis Daerah Jelebu</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .safe-bottom {
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 75px);
+    }
+    /* Thermal receipt typography */
+    .thermal-receipt {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #fffef0;
+      border: 1px dashed #94a3b8;
+    }
+    /* Scanner laser animation */
+    @keyframes scanMove {
+      0% { top: 15%; opacity: 0.3; }
+      50% { top: 85%; opacity: 1; }
+      100% { top: 15%; opacity: 0.3; }
+    }
+    .animate-laser {
+      animation: scanMove 2.2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen flex justify-center">
+
+  <!-- Mobile Screen Wrapper (Max 480px di desktop, 100% di telefon bimbit) -->
+  <div class="w-full max-w-md bg-slate-900 min-h-screen flex flex-col shadow-2xl relative border-x border-slate-800">
+
+    <!-- =================================================== -->
+    <!-- HEADER ATAS PEGAWAI PENGUATKUASA                   -->
+    <!-- =================================================== -->
+    <header id="app-header" class="bg-slate-950 text-white p-3 sticky top-0 z-40 border-b border-slate-800 shadow-md">
+      <div class="flex items-center justify-between">
+        
+        <!-- Identiti MDJ & Pegawai -->
+        <div class="flex items-center space-x-2.5">
+          <div class="bg-white p-1 rounded-xl shadow border border-amber-400">
+            <img src="logo_mdj.jpg" alt="Logo MDJ" class="h-8 w-auto object-contain">
+          </div>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <span class="text-xs font-black tracking-wider text-amber-400 uppercase">PENGUATKUASA MDJ</span>
+              <span id="shift-status-pill" class="text-[9px] bg-red-600 text-white font-bold px-1.5 py-0.2 rounded uppercase">SYIF AKTIF</span>
+            </div>
+            <div class="text-[11px] text-slate-300 font-mono" id="header-officer-info">
+              Sjn. Zulkifli (KOP-104) | Zon A
+            </div>
+          </div>
+        </div>
+
+        <!-- Indikator Status & Butang Tamat Syif -->
+        <div class="flex items-center space-x-1.5 text-[10px] font-mono">
+          <span id="badge-gps-status" class="flex items-center text-emerald-400 bg-slate-900 border border-emerald-800 px-2 py-0.5 rounded-full font-bold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span> GPS
+          </span>
+          <button onclick="handleEndShiftConfirm()" class="bg-slate-800 hover:bg-red-800 text-slate-300 hover:text-white px-2 py-1 rounded-lg border border-slate-700 transition" title="Log Keluar / Tamat Syif">
+            <span>🚪 Keluar</span>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- =================================================== -->
+    <!-- KANDUNGAN SKRIN UTAMA APLIKASI                     -->
+    <!-- =================================================== -->
+    <main class="flex-1 overflow-y-auto safe-bottom p-3.5 space-y-4">
+
+      <!-- =================================================== -->
+      <!-- SKRIN 0: LOG MASUK PEGAWAI PENGUATKUASA (LOGIN)     -->
+      <!-- =================================================== -->
+      <section id="screen-login" class="enforcer-screen hidden space-y-5 py-4">
+        
+        <div class="text-center space-y-2">
+          <div class="inline-block bg-white p-3 rounded-2xl shadow-xl border-2 border-amber-400">
+            <img src="logo_mdj.jpg" alt="Logo MDJ" class="h-16 w-auto object-contain mx-auto">
+          </div>
+          <h1 class="text-lg font-black text-amber-400 tracking-wide mt-2">EZ PARK - JELEBU</h1>
+          <p class="text-xs text-slate-300 font-semibold">Sistem Penguatkuasaan & Rondaan Bersepadu MDJ</p>
+          <div class="inline-block bg-slate-800 px-3 py-1 rounded-full text-[10px] text-slate-400 font-mono">
+            Versi Lapangan (Kamera OCR & Pencetak Kompaun)
+          </div>
+        </div>
+
+        <!-- Kad Borang Log Masuk -->
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-4 text-xs">
+          <div class="border-b border-slate-800 pb-2">
+            <span class="text-amber-400 font-bold block text-sm">Log Masuk Pegawai Bertugas</span>
+            <span class="text-slate-400 text-[11px]">Sila masukkan kelayakan kad kuasa dan pilih zon rondaan.</span>
+          </div>
+
+          <!-- Pilihan Profil Pegawai Bertugas -->
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">ID Kad Kuasa Pegawai</label>
+            <select id="login-officer-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold focus:border-amber-400 focus:outline-none">
+              <option value="KOP-001" data-name="Insp. Rosli bin Daud">KOP-001 - Insp. Rosli bin Daud (Ketua Penguatkuasa)</option>
+              <option value="KOP-104" data-name="Sjn. Zulkifli bin Ismail">KOP-104 - Sjn. Zulkifli bin Ismail</option>
+              <option value="KOP-108" data-name="Kpl. Mohd Farhan bin Daud">KOP-108 - Kpl. Mohd Farhan bin Daud</option>
+              <option value="KOP-112" data-name="L/Kpl. Siti Hajar binti Ramli">KOP-112 - L/Kpl. Siti Hajar binti Ramli</option>
+            </select>
+          </div>
+
+          <!-- Kata Laluan / PIN -->
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Kata Laluan / PIN Keselamatan</label>
+            <input type="password" id="login-password" value="123456" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono font-bold tracking-widest focus:border-amber-400 focus:outline-none" placeholder="Masukkan PIN 6 angka">
+            <span class="text-[10px] text-slate-500 mt-1 block">* Kod laluan pantas pengujian: 123456</span>
+          </div>
+
+          <!-- Pilihan Zon Operasi Syif (Dinamik dari Database MDJ) -->
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Zon Rondaan Syif Hari Ini</label>
+            <select id="login-zone-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-amber-300 font-bold focus:border-amber-400 focus:outline-none">
+              <option value="Zon A - Kuala Klawang">Zon A - Pekan Kuala Klawang (Kadar RM0.60/jam)</option>
+              <option value="Zon B - Simpang Pertang">Zon B - Pekan Simpang Pertang (Kadar RM0.50/jam)</option>
+              <option value="Zon C - Pekan Titi">Zon C - Pekan Titi / Pasar (Kadar RM0.50/jam)</option>
+            </select>
+          </div>
+
+          <!-- Pilihan Saiz Resit Kertas Kompaun -->
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Pencetak Haba Lapangan (Thermal Bluetooth)</label>
+            <div class="grid grid-cols-2 gap-2 text-center">
+              <label class="border border-amber-500 bg-amber-950/40 p-2 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer">
+                <input type="radio" name="login_paper" value="58mm" checked class="text-amber-500">
+                <span class="font-bold text-white text-[11px]">58mm (Kompak/Poket)</span>
+              </label>
+              <label class="border border-slate-700 bg-slate-950 p-2 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer">
+                <input type="radio" name="login_paper" value="80mm" class="text-amber-500">
+                <span class="font-bold text-slate-300 text-[11px]">80mm (Kenderaan)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Butang Mulakan Syif Rondaan -->
+          <button onclick="handleOfficerLogin()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black py-3 rounded-xl shadow-lg text-sm flex items-center justify-center space-x-2 transition transform active:scale-95">
+            <span>🚀 MULA SYIF RONDAAN</span>
+          </button>
+        </div>
+
+        <div class="text-center text-[11px] text-slate-500 font-mono">
+          Hak Cipta Terpelihara &copy; 2026 Majlis Daerah Jelebu
+        </div>
+
+      </section>
+
+      <!-- =================================================== -->
+      <!-- SKRIN 1: PENGIMBAS OCR & SEMAKAN SESI AKTIF (UTAMA) -->
+      <!-- =================================================== -->
+      <section id="screen-scanner" class="enforcer-screen block space-y-3.5">
+        
+        <!-- Viewfinder Kamera OCR AI -->
+        <div class="relative bg-black rounded-2xl overflow-hidden border-2 border-slate-700 shadow-inner h-64 flex flex-col items-center justify-center">
+          
+          <!-- Suapan Video Kamera Sebenar (Jika Dibenarkan) -->
+          <video id="camera-video-stream" class="absolute inset-0 w-full h-full object-cover hidden" playsinline autoplay muted></video>
+
+          <!-- Grid Overlay Simulasi Kamera Jika Tiada WebCam -->
+          <div id="camera-placeholder-grid" class="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+          
+          <!-- Bingkai Pengimbas (Bounding Box Plat Kereta) -->
+          <div class="w-64 h-24 border-2 border-dashed border-amber-400 rounded-xl relative flex flex-col items-center justify-center p-2 bg-slate-900/60 backdrop-blur-sm z-10 shadow-2xl">
+            <span class="absolute -top-3 left-3 bg-amber-400 text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded tracking-wider uppercase">
+              AI OCR CAMERA SCANNER
+            </span>
+            <div id="ocr-scanned-plate" class="text-3xl font-black font-mono tracking-widest text-white">
+              NDJ 8821
+            </div>
+            <span class="text-[9px] text-amber-300 font-mono mt-0.5">Ketepatan OCR: 99.4%</span>
+          </div>
+
+          <!-- Garis Laser Pengimbas Bergerak -->
+          <div class="w-60 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent absolute animate-laser z-20"></div>
+
+          <!-- Kawalan Kamera Langsung & Koordinat GPS -->
+          <div class="absolute bottom-2 left-3 right-3 flex justify-between items-center text-[10px] text-slate-300 font-mono z-20 bg-black/70 backdrop-blur px-2 py-1 rounded-lg border border-slate-800">
+            <span class="flex items-center">
+              <span class="text-amber-400 mr-1">📍</span> GPS: 2.938812, 102.071240
+            </span>
+            <div class="flex items-center space-x-2">
+              <button onclick="toggleRealCameraStream()" id="btn-toggle-cam" class="text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-2 py-0.5 rounded border border-slate-600">
+                📷 Kamera Hidup
+              </button>
+              <span id="camera-clock">14:40:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carian Manual & Ujian Pantas Nombor Plat -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 space-y-2.5">
+          <div class="flex gap-2">
+            <input type="text" id="manual-plate-input" value="NDJ 8821" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm font-black font-mono uppercase text-center text-white focus:outline-none focus:border-amber-400" placeholder="MASUKKAN NO. PLAT">
+            <button onclick="scanPlate(document.getElementById('manual-plate-input').value)" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow flex items-center space-x-1">
+              <span>Semak</span>
+            </button>
+          </div>
+
+          <!-- Butang Pintas Ujian Pantas -->
+          <div class="flex justify-between items-center pt-1 text-[11px]">
+            <span class="text-slate-400 font-semibold">Simulasi Pantas:</span>
+            <div class="space-x-1">
+              <button onclick="testQuickScan('NDJ 8821')" class="px-2.5 py-1 bg-emerald-950 text-emerald-300 border border-emerald-700 rounded-lg font-mono font-bold hover:bg-emerald-900 transition">
+                ✓ Sah (NDJ 8821)
+              </button>
+              <button onclick="testQuickScan('WYY 4091')" class="px-2.5 py-1 bg-red-950 text-red-300 border border-red-700 rounded-lg font-mono font-bold hover:bg-red-900 transition">
+                ✕ Tamat (WYY 4091)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hasil Semakan Status OCR (Live Result Card) -->
+        <div id="ocr-result-card" class="rounded-2xl p-4 border transition-all duration-300 bg-emerald-950 border-emerald-500 text-emerald-100 shadow-lg">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs font-bold text-emerald-300">STATUS SESI PARKIR</span>
+            <span id="ocr-status-pill" class="bg-emerald-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              VALID (PARKING SAH)
+            </span>
+          </div>
+
+          <div id="ocr-status-title" class="text-lg font-black text-white mt-1">
+            PARKING SAH: Baki masa 42 minit
+          </div>
+          <div id="ocr-status-details" class="text-xs text-emerald-200 mt-1">
+            Zon A (Kuala Klawang) | Tamat: 03:20 PM | No. Sesi: EZP-8891
+          </div>
+
+          <!-- Butang Tindakan Keluar Kompaun (Hanya Muncul jika Tiada Tiket / Tamat) -->
+          <div id="ocr-action-container" class="mt-3 pt-3 border-t border-red-900 hidden">
+            <button onclick="openIssueCompoundScreen()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-3 rounded-xl text-xs shadow-lg flex items-center justify-center space-x-2 animate-pulse">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              <span>KELUARKAN NOTIS SAMAN SEGERA</span>
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =================================================== -->
+      <!-- SKRIN 2: BORANG PENGELUARAN KOMPAUN & 3 FOTO BUKTI -->
+      <!-- =================================================== -->
+      <section id="screen-issue" class="enforcer-screen hidden space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <div>
+            <h2 class="text-base font-black text-white">Borang Pengeluaran Kompaun</h2>
+            <p class="text-[11px] text-slate-400">Penguatkuasaan Undang-Undang Kecil Tempat Letak Kereta MDJ</p>
+          </div>
+          <button onclick="switchScreen('scanner')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-3 py-1.5 rounded-xl">
+            ✕ Batal
+          </button>
+        </div>
+
+        <!-- Ringkasan Kenderaan & Lokasi -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 space-y-3.5 text-xs">
+          
+          <div class="flex justify-between items-center bg-black/50 p-2.5 rounded-xl border border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 block font-semibold">NO. PENDAFTARAN (PLAT)</span>
+              <span id="issue-plate-display" class="text-xl font-black font-mono text-amber-400">WYY 4091</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 block font-semibold">ZON / PETAK</span>
+              <span id="issue-zone-display" class="font-bold text-white">Zon A (Petak 14)</span>
+            </div>
+          </div>
+
+          <!-- Maklumat Fizikal Kenderaan (Jenama / Model / Warna) -->
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Maklumat Fizikal Kenderaan (Pematuhan Mahkamah)</label>
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <span class="text-[10px] text-slate-400 block mb-0.5">Jenama</span>
+                <select id="issue-car-brand" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-bold text-xs focus:border-amber-400">
+                  <option>Proton</option>
+                  <option>Perodua</option>
+                  <option selected>Toyota</option>
+                  <option>Honda</option>
+                  <option>Nissan</option>
+                  <option>Mitsubishi</option>
+                  <option>Mazda</option>
+                  <option>Lain-lain</option>
+                </select>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 block mb-0.5">Model</span>
+                <input type="text" id="issue-car-model" value="Vios" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-bold text-xs focus:border-amber-400">
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 block mb-0.5">Warna</span>
+                <input type="text" id="issue-car-color" value="Perak" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-bold text-xs focus:border-amber-400">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pilihan Kesalahan UUK MDJ -->
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Pilihan Kesalahan (UUK MDJ)</label>
+            <select id="issue-uuk-code" onchange="updateFineAmountDisplay(this)" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold text-xs focus:border-amber-400">
+              <option value="UUK 5" data-amount="30.00" selected>UUK 5: Meletak kenderaan tanpa bayaran sah (RM30.00)</option>
+              <option value="UUK 8" data-amount="50.00">UUK 8: Meletak kenderaan di luar garisan petak (RM50.00)</option>
+              <option value="UUK 10" data-amount="50.00">UUK 10: Meletak kenderaan melawan arah lalu lintas (RM50.00)</option>
+              <option value="UUK 12" data-amount="100.00">UUK 12: Menghalang petak OKU tanpa pelekat sah (RM100.00)</option>
+              <option value="UUK 15" data-amount="100.00">UUK 15: Menghalang pili bomba / laluan kecemasan (RM100.00)</option>
+            </select>
+          </div>
+
+          <!-- Tangkapan 3 Sudut Foto Bukti Wajib (Seksyen 90A Akta Keterangan) -->
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="font-bold text-slate-300 text-xs">3 Sudut Foto Bukti Wajib (GPS Geotag)</label>
+              <span class="text-amber-400 text-[10px] font-mono">Seksyen 90A Keterangan</span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
+              
+              <!-- Foto 1: Depan & Plat -->
+              <div onclick="simulateCapturePhoto(1)" class="border border-slate-700 bg-slate-950 hover:border-amber-400 rounded-xl p-2 h-24 flex flex-col justify-center items-center cursor-pointer transition">
+                <span class="text-xl mb-1">📸</span>
+                <span class="font-bold text-slate-200">1. Hadapan & Plat</span>
+                <span class="text-[9px] text-emerald-400 font-mono mt-0.5" id="photo-status-1">✓ Dirakam</span>
+              </div>
+
+              <!-- Foto 2: Cermin Hadapan Tanpa Tiket -->
+              <div onclick="simulateCapturePhoto(2)" class="border border-slate-700 bg-slate-950 hover:border-amber-400 rounded-xl p-2 h-24 flex flex-col justify-center items-center cursor-pointer transition">
+                <span class="text-xl mb-1">📸</span>
+                <span class="font-bold text-slate-200">2. Cermin Hadapan</span>
+                <span class="text-[9px] text-emerald-400 font-mono mt-0.5" id="photo-status-2">✓ Dirakam</span>
+              </div>
+
+              <!-- Foto 3: Belakang Kereta & Nombor Petak (Permintaan Khas MDJ) -->
+              <div onclick="simulateCapturePhoto(3)" class="border-2 border-amber-500 bg-amber-950/30 hover:border-amber-300 rounded-xl p-2 h-24 flex flex-col justify-center items-center cursor-pointer transition">
+                <span class="text-xl mb-1">📸</span>
+                <span class="font-black text-amber-300">3. Belakang & Petak</span>
+                <span class="text-[9px] text-amber-400 font-mono mt-0.5" id="photo-status-3">✓ Petak No. 14</span>
+              </div>
+
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1 italic">* Foto 3 membuktikan kedudukan nombor petak berturap MDJ bagi menyangkal sebarang pertikaian di mahkamah.</p>
+          </div>
+
+          <!-- Jumlah Saman -->
+          <div class="flex justify-between items-center p-3 bg-red-950/70 border border-red-700 rounded-xl">
+            <span class="font-bold text-slate-200 text-xs">NILAI KOMPAUN:</span>
+            <span id="issue-amount-display" class="text-2xl font-black text-white font-mono">RM 30.00</span>
+          </div>
+
+          <!-- Butang Simpan & Cetak Notis Kompaun Segera -->
+          <button onclick="handleExecuteIssueAndPrint()" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black py-3.5 rounded-xl shadow-lg flex items-center justify-center space-x-2 text-xs transition transform active:scale-95">
+            <span class="text-base">🖨️</span>
+            <span>SIMPAN & CETAK NOTIS KOMPAUN SEGERA</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- =================================================== -->
+      <!-- SKRIN 3: CETAKAN TIKET RESIT & STATUS SAMAN         -->
+      <!-- =================================================== -->
+      <section id="screen-receipt-view" class="enforcer-screen hidden space-y-4">
+        
+        <div class="bg-emerald-950 border border-emerald-600 rounded-2xl p-3.5 text-center shadow-lg">
+          <div class="w-10 h-10 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center mx-auto mb-2 text-xl font-bold">
+            ✓
+          </div>
+          <h3 class="text-sm font-black text-white">NOTIS KOMPAUN BERJAYA DIKELUARKAN</h3>
+          <p class="text-[11px] text-emerald-200 mt-0.5">Data telah direkodkan ke pelayan pusat MDJ.</p>
+        </div>
+
+        <!-- Pratonton Resit Thermal Haba (58mm / 80mm ESC/POS) -->
+        <div class="bg-white rounded-2xl p-4 shadow-xl border border-slate-300">
+          <div class="flex justify-between items-center mb-2 text-[10px] text-slate-600 font-mono border-b pb-1">
+            <span>FORMAT TIKET: 58mm ESC/POS</span>
+            <span class="text-emerald-700 font-bold">● TERSAMBUNG BLUETOOTH</span>
+          </div>
+
+          <!-- Badan Resit Haba -->
+          <div class="thermal-receipt p-4 text-slate-900 text-xs rounded shadow-inner space-y-2">
+            <div class="text-center">
+              <div class="font-bold text-sm tracking-wide">MAJLIS DAERAH JELEBU</div>
+              <div class="text-[10px] font-bold">NOTIS PEMBERITAHUAN KESALAHAN</div>
+              <div class="text-[9px] text-slate-600">Perintah Tempat Letak Kereta MDJ 2026</div>
+              <div class="border-b border-dashed border-slate-800 my-2"></div>
+            </div>
+
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="flex justify-between">
+                <span>No. Notis:</span>
+                <span id="rec-notice-no" class="font-bold">MDJ-K-2026-9921</span>
+              </div>
+              <div class="flex justify-between">
+                <span>No. Plat:</span>
+                <span id="rec-plate" class="font-bold text-base">WYY 4091</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Model/Warna:</span>
+                <span id="rec-model">Toyota Vios (Perak)</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Lokasi:</span>
+                <span>Zon A (Petak 14, Pekan Kuala Klawang)</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Kesalahan:</span>
+                <span id="rec-uuk" class="font-bold text-red-700">UUK 5: Tiada Bayaran Sah</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Tarikh & Masa:</span>
+                <span id="rec-datetime">11/11/2026 14:40</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Pegawai:</span>
+                <span id="rec-officer">KOP-104 (Zulkifli)</span>
+              </div>
+            </div>
+
+            <div class="border-b border-dashed border-slate-800 my-2"></div>
+
+            <div class="flex justify-between items-center text-sm font-black">
+              <span>JUMLAH SAMAN:</span>
+              <span id="rec-amount" class="text-base font-mono">RM 30.00</span>
+            </div>
+
+            <!-- Kod QR DuitNow Cetakan Cermin -->
+            <div class="my-3 p-2 bg-slate-50 border border-dashed border-slate-400 rounded text-center">
+              <div class="text-[9px] font-bold text-slate-700 uppercase">IMBAS KOD QR UNTUK BAYAR SEGERA</div>
+              <div class="w-24 h-24 bg-white border-2 border-slate-900 mx-auto my-1.5 flex items-center justify-center p-1">
+                <!-- SVG Dummy QR Code -->
+                <svg class="w-20 h-20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14-2h4v2h-4v-2zm0 4h2v4h-2v-4zm-4-4h2v2h-2v-2zm2 2h2v2h-2v-2zm-2 2h2v2h-2v-2zm4 2h2v2h-2v-2zm-4 2h4v2h-4v-2z"/>
+                </svg>
+              </div>
+              <div class="text-[8px] text-slate-500 font-mono">HitPay DuitNow QR / FPX Online</div>
+            </div>
+
+            <div class="text-[8px] text-center text-slate-600 leading-tight">
+              Sila jelaskan kompaun ini dalam tempoh 14 hari di Portal EZ Park Jelebu atau kaunter MDJ bagi mengelakkan pendakwaan mahkamah.
+            </div>
+          </div>
+        </div>
+
+        <!-- Butang Cetak Semula & Kembali -->
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button onclick="handleReprintThermalReceipt()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-3 rounded-xl shadow flex items-center justify-center space-x-1">
+            <span>🖨️ Cetak Semula</span>
+          </button>
+          <button onclick="switchScreen('scanner')" class="bg-slate-800 hover:bg-slate-700 text-white font-black py-3 rounded-xl shadow flex items-center justify-center space-x-1">
+            <span>🔍 Rondaan Baharu</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- =================================================== -->
+      <!-- SKRIN 4: SAMBUNGAN PENCETAK BLUETOOTH ESC/POS       -->
+      <!-- =================================================== -->
+      <section id="screen-printer" class="enforcer-screen hidden space-y-4">
+        
+        <div>
+          <h2 class="text-base font-black text-white">Pencetak Haba Bluetooth (ESC/POS)</h2>
+          <p class="text-[11px] text-slate-400">Pengurusan peranti pencetak tiket kompaun mudah alih</p>
+        </div>
+
+        <!-- Kad Status Peranti Semasa -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400 font-semibold">Status Sambungan:</span>
+            <span id="printer-badge-status" class="bg-emerald-950 text-emerald-400 border border-emerald-700 px-2.5 py-0.5 rounded-full font-bold text-[10px]">
+              ● TERSAMBUNG (POS-5802)
+            </span>
+          </div>
+
+          <div class="p-3 bg-black/40 rounded-xl space-y-1 font-mono text-[11px]">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Model Printer:</span>
+              <span class="font-bold text-white">POS-5802 ESC/POS</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">MAC / UUID:</span>
+              <span class="text-amber-400">00:11:22:33:44:55</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Saiz Kertas:</span>
+              <span class="font-bold text-white">58mm (384 dot)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Bateri Printer:</span>
+              <span class="text-emerald-400 font-bold">92% (Tahan 10 Jam)</span>
+            </div>
+          </div>
+
+          <!-- Butang Imbas Bluetooth Web API Sebenar & Simulasi -->
+          <div class="space-y-2 pt-1">
+            <button onclick="connectRealWebBluetoothPrinter()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl shadow flex items-center justify-center space-x-2">
+              <span>📶 Cari Peranti Bluetooth (Web Bluetooth)</span>
+            </button>
+            <button onclick="testPrintSampleReceipt()" class="w-full bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold py-2.5 rounded-xl border border-slate-700 shadow flex items-center justify-center space-x-2">
+              <span>📄 Cetak Tiket Ujian (Test Print)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Panduan Pemilihan Pencetak untuk PBT MDJ -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 space-y-2 text-xs">
+          <span class="font-bold text-amber-400 block text-xs">Piawaian Perkakasan Penguatkuasa MDJ:</span>
+          <ul class="space-y-1.5 text-slate-300 text-[11px] list-disc list-inside">
+            <li><strong>Pencetak Haba 58mm:</strong> Tanpa dakwat (inkless), cas bateri USB-C, berat ~200g disangkut pada tali pinggang pegawai.</li>
+            <li><strong>Protokol ESC/POS:</strong> Menyokong cetakan segera teks berwarta, garisan, kod bar, dan kod QR DuitNow.</li>
+          </ul>
+        </div>
+
+      </section>
+
+      <!-- =================================================== -->
+      <!-- SKRIN 5: STATISTIK & LOG RONDAAN SYIF HARI INI     -->
+      <!-- =================================================== -->
+      <section id="screen-stats" class="enforcer-screen hidden space-y-4">
+        
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-base font-black text-white">Laporan Syif Rondaan Hari Ini</h2>
+            <p class="text-[11px] text-slate-400" id="stats-officer-subtext">Pegawai: Sjn. Zulkifli (KOP-104)</p>
+          </div>
+          <button onclick="handleEndShiftConfirm()" class="text-xs bg-red-950 hover:bg-red-900 text-red-300 border border-red-700 font-bold px-3 py-1 rounded-xl">
+            Tamat Syif
+          </button>
+        </div>
+
+        <!-- 3 Kad Metrik Syif Pegawai -->
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <span class="text-[10px] text-slate-400 block font-bold">DIPERIKSA</span>
+            <span id="stat-scanned-count" class="text-2xl font-black text-white font-mono">42</span>
+            <span class="text-[9px] text-slate-500 block">Kenderaan</span>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <span class="text-[10px] text-slate-400 block font-bold">SAH (HIJAU)</span>
+            <span id="stat-valid-count" class="text-2xl font-black text-emerald-400 font-mono">38</span>
+            <span class="text-[9px] text-emerald-600 block">90.4%</span>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+            <span class="text-[10px] text-slate-400 block font-bold">DISAMAN</span>
+            <span id="stat-issued-count" class="text-2xl font-black text-red-500 font-mono">4</span>
+            <span class="text-[9px] text-red-400 block">Notis</span>
+          </div>
+        </div>
+
+        <!-- Senarai Saman yang dikeluarkan syif ini -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 space-y-2 text-xs">
+          <span class="font-bold text-slate-300 block">Notis Dikeluarkan Sepanjang Syif:</span>
+          <div id="enforcer-shift-compounds" class="space-y-1.5 font-mono text-[11px]">
+            <div class="flex justify-between bg-black/40 p-2 rounded-lg border border-slate-800">
+              <span class="font-bold text-red-400">MDJ-K-2026-9921</span>
+              <span>WYY 4091 (RM30)</span>
+              <span class="text-slate-400">10:25 AM</span>
+            </div>
+            <div class="flex justify-between bg-black/40 p-2 rounded-lg border border-slate-800">
+              <span class="font-bold text-red-400">MDJ-K-2026-9918</span>
+              <span>BNA 1022 (RM30)</span>
+              <span class="text-slate-400">09:15 AM</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- =================================================== -->
+    <!-- BAR NAVIGASI BAWAH PEGAWAI (BOTTOM NAV)            -->
+    <!-- =================================================== -->
+    <nav id="app-bottom-nav" class="bg-slate-950 border-t border-slate-800 fixed bottom-0 left-0 right-0 max-w-md mx-auto z-40 flex justify-around py-2 shadow-2xl">
+      <button onclick="switchScreen('scanner')" id="enf-nav-scanner" class="enf-nav-btn flex flex-col items-center text-amber-400 font-bold text-[10px] w-1/4">
+        <span class="text-lg mb-0.5">📷</span>
+        <span>Imbas Plat</span>
+      </button>
+
+      <button onclick="switchScreen('issue')" id="enf-nav-issue" class="enf-nav-btn flex flex-col items-center text-slate-400 hover:text-slate-200 font-semibold text-[10px] w-1/4">
+        <span class="text-lg mb-0.5">📝</span>
+        <span>Saman</span>
+      </button>
+
+      <button onclick="switchScreen('printer')" id="enf-nav-printer" class="enf-nav-btn flex flex-col items-center text-slate-400 hover:text-slate-200 font-semibold text-[10px] w-1/4">
+        <span class="text-lg mb-0.5">🖨️</span>
+        <span>Pencetak</span>
+      </button>
+
+      <button onclick="switchScreen('stats')" id="enf-nav-stats" class="enf-nav-btn flex flex-col items-center text-slate-400 hover:text-slate-200 font-semibold text-[10px] w-1/4">
+        <span class="text-lg mb-0.5">📊</span>
+        <span>Rondaan</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- =================================================== -->
+  <!-- JAVASCRIPT LOGIK SISTEM PENGUATKUASA MDJ            -->
+  <!-- =================================================== -->
+  <script>
+    // 1. Audio Sound Effects Generator (Web Audio API)
+    let audioCtx = null;
+    function playBeep(type) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'valid') {
+          // Success high double chime
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.15);
+        } else if (type === 'invalid') {
+          // Warning buzzer
+          osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.35);
+        } else if (type === 'print') {
+          // Rapid printing beep
+          osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.08);
+        }
+      } catch (e) {
+        // Fallback silent
+      }
+    }
+
+    // 2. Kawalan Navigasi Antara Skrin
+    function switchScreen(screenName) {
+      document.querySelectorAll('.enforcer-screen').forEach(s => s.classList.add('hidden'));
+      document.querySelectorAll('.enf-nav-btn').forEach(btn => {
+        btn.classList.remove('text-amber-400', 'font-bold');
+        btn.classList.add('text-slate-400');
+      });
+
+      const target = document.getElementById('screen-' + screenName);
+      if (target) target.classList.remove('hidden');
+
+      const activeBtn = document.getElementById('enf-nav-' + screenName);
+      if (activeBtn) {
+        activeBtn.classList.add('text-amber-400', 'font-bold');
+        activeBtn.classList.remove('text-slate-400');
+      }
+    }
+
+    // 3. Sesi Pegawai & Pengurusan Log Masuk
+    let currentOfficer = null;
+
+    function handleOfficerLogin() {
+      const select = document.getElementById('login-officer-select');
+      const badge = select.value;
+      const name = select.options[select.selectedIndex].getAttribute('data-name');
+      const password = document.getElementById('login-password').value;
+      const zone = document.getElementById('login-zone-select').value;
+      const paperSize = document.querySelector('input[name="login_paper"]:checked').value;
+
+      if (!password) {
+        alert("Sila masukkan kata laluan / PIN keselamatan.");
+        return;
+      }
+
+      currentOfficer = { badge, name, zone, paperSize, loginTime: new Date().toLocaleTimeString() };
+      sessionStorage.setItem('ezpark_enforcer_session', JSON.stringify(currentOfficer));
+
+      // Kemas kini UI Header & Subtext
+      document.getElementById('header-officer-info').innerText = `${name.split(' ')[0]} (${badge}) | ${zone.split(' - ')[0]}`;
+      document.getElementById('stats-officer-subtext').innerText = `Pegawai: ${name} (${badge})`;
+      document.getElementById('issue-zone-display').innerText = `${zone.split(' - ')[0]} (Petak 14)`;
+
+      // Paparkan Bar Navigasi & Tukar ke Skrin Pengimbas
+      document.getElementById('app-header').classList.remove('hidden');
+      document.getElementById('app-bottom-nav').classList.remove('hidden');
+      switchScreen('scanner');
+      playBeep('valid');
+    }
+
+    function handleEndShiftConfirm() {
+      const ok = confirm(`Tamatkan Syif Rondaan Sekarang?\n\nRingkasan Syif:\n• Jumlah Kenderaan Diperiksa: ${scannedCount}\n• Kenderaan Sah: ${validCount}\n• Notis Kompaun Dikeluarkan: ${issuedCount}\n\nTekan OK untuk log keluar.`);
+      if (ok) {
+        sessionStorage.removeItem('ezpark_enforcer_session');
+        currentOfficer = null;
+        document.getElementById('app-bottom-nav').classList.add('hidden');
+        switchScreen('login');
+      }
+    }
+
+    // 4. Pengimbas OCR & Semakan Plat Pelayan MDJ
+    let currentScannedPlate = "NDJ 8821";
+    let scannedCount = 42;
+    let validCount = 38;
+    let issuedCount = 4;
+
+    async function scanPlate(plate) {
+      plate = (plate || '').trim().toUpperCase().replace(/\s+/g, '');
+      currentScannedPlate = plate;
+      document.getElementById('ocr-scanned-plate').innerText = plate;
+      document.getElementById('manual-plate-input').value = plate;
+
+      const card = document.getElementById('ocr-result-card');
+      const pill = document.getElementById('ocr-status-pill');
+      const title = document.getElementById('ocr-status-title');
+      const details = document.getElementById('ocr-status-details');
+      const action = document.getElementById('ocr-action-container');
+
+      card.className = "rounded-2xl p-4 border transition-all duration-300 bg-slate-900 border-slate-700 text-slate-300 shadow-lg";
+      title.innerText = "Menyemak pangkalan data MDJ...";
+      details.innerText = "Menghubungi pelayan pusat...";
+      action.classList.add('hidden');
+
+      try {
+        const res = await fetch(`/api/v1/parking/check/${plate}`);
+        const data = await res.json();
+        scannedCount++;
+        document.getElementById('stat-scanned-count').innerText = scannedCount;
+
+        if (data.is_valid) {
+          playBeep('valid');
+          validCount++;
+          document.getElementById('stat-valid-count').innerText = validCount;
+
+          card.className = "rounded-2xl p-4 border transition-all duration-300 bg-emerald-950 border-emerald-500 text-emerald-100 shadow-lg";
+          pill.className = "bg-emerald-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase";
+          pill.innerText = "VALID (PARKING SAH)";
+          title.innerText = `PARKING SAH: Baki masa ${data.remaining_minutes} minit`;
+          details.innerText = `${data.zone_code || 'Zon A'} | Tamat: ${new Date(data.expires_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} | Sesi: ${data.session_code || 'EZP-8891'}`;
+          action.classList.add('hidden');
+        } else {
+          playBeep('invalid');
+          card.className = "rounded-2xl p-4 border transition-all duration-300 bg-red-950 border-red-500 text-red-100 shadow-lg";
+          pill.className = "bg-red-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase animate-bounce";
+          pill.innerText = "TIADA BAYARAN SAH";
+          title.innerText = `TIADA TIKET: Kenderaan ${plate}`;
+          details.innerText = "Tiada rekod bayaran aktif dikesan di Zon A. Sila ambil tindakan kompaun.";
+          action.classList.remove('hidden');
+        }
+      } catch (err) {
+        card.className = "rounded-2xl p-4 border bg-red-950 border-red-600 text-red-200 text-xs";
+        title.innerText = "Ralat Komunikasi";
+        details.innerText = err.message;
+      }
+    }
+
+    function testQuickScan(plate) {
+      scanPlate(plate);
+    }
+
+    function openIssueCompoundScreen() {
+      document.getElementById('issue-plate-display').innerText = currentScannedPlate;
+      switchScreen('issue');
+    }
+
+    function updateFineAmountDisplay(select) {
+      const opt = select.options[select.selectedIndex];
+      const amount = opt.getAttribute('data-amount') || "30.00";
+      document.getElementById('issue-amount-display').innerText = `RM ${parseFloat(amount).toFixed(2)}`;
+    }
+
+    // 5. Tangkapan 3 Foto Bukti (Seksyen 90A Akta Keterangan)
+    function simulateCapturePhoto(idx) {
+      playBeep('print');
+      const el = document.getElementById(`photo-status-${idx}`);
+      el.innerText = "✓ Disahkan (GPS)";
+      const label = idx === 1 ? "1. Hadapan & Plat" : idx === 2 ? "2. Cermin Hadapan (Tiada Tiket)" : "3. Belakang Kereta & Petak Parkir";
+      alert(`Foto Bukti [${label}] berjaya dirakam!\n\nCop Keselamatan Seksyen 90A:\n• GPS Geotag: Lat 2.938812, Lng 102.071240\n• Waktu: ${new Date().toLocaleTimeString()}\n• Integriti Bukti: Hash SHA-256 Dijana.`);
+    }
+
+    // 6. Simpan Kompaun ke Pelayan & Buka Resit Haba
+    async function handleExecuteIssueAndPrint() {
+      const plate = currentScannedPlate;
+      const brand = document.getElementById('issue-car-brand').value;
+      const model = document.getElementById('issue-car-model').value;
+      const color = document.getElementById('issue-car-color').value;
+      const uukSelect = document.getElementById('issue-uuk-code');
+      const uukCode = uukSelect.value;
+      const fineAmount = uukSelect.options[uukSelect.selectedIndex].getAttribute('data-amount') || "30.00";
+
+      playBeep('print');
+
+      try {
+        const res = await fetch('/api/v1/compounds/issue', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plate_number: plate,
+            brand,
+            model,
+            color,
+            uuk_code: uukCode,
+            officer_badge: currentOfficer ? currentOfficer.badge : "KOP-104",
+            gps_lat: 2.938812,
+            gps_lng: 102.071240,
+            location_description: "Jalan Dato' Ombi, Kuala Klawang (Petak 14)"
+          })
+        });
+
+        const data = await res.json();
+        const noticeNo = data.compound ? data.compound.notice_number : `MDJ-K-2026-${Math.floor(1000 + Math.random()*9000)}`;
+
+        // Kemas kini resit
+        document.getElementById('rec-notice-no').innerText = noticeNo;
+        document.getElementById('rec-plate').innerText = plate;
+        document.getElementById('rec-model').innerText = `${brand} ${model} (${color})`;
+        document.getElementById('rec-uuk').innerText = `${uukCode}: Tiada Bayaran Sah`;
+        document.getElementById('rec-amount').innerText = `RM ${parseFloat(fineAmount).toFixed(2)}`;
+        document.getElementById('rec-datetime').innerText = new Date().toLocaleString([], {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+        if (currentOfficer) {
+          document.getElementById('rec-officer').innerText = `${currentOfficer.badge} (${currentOfficer.name.split(' ')[0]})`;
+        }
+
+        // Kemas kini statistik syif
+        issuedCount++;
+        document.getElementById('stat-issued-count').innerText = issuedCount;
+        const shiftList = document.getElementById('enforcer-shift-compounds');
+        shiftList.innerHTML = `
+          <div class="flex justify-between bg-black/40 p-2 rounded-lg border border-slate-800">
+            <span class="font-bold text-red-400">${noticeNo}</span>
+            <span>${plate} (RM${parseFloat(fineAmount).toFixed(0)})</span>
+            <span class="text-slate-400">Baru Sahaja</span>
+          </div>
+        ` + shiftList.innerHTML;
+
+        switchScreen('receipt-view');
+      } catch (err) {
+        alert("Ralat menyambung ke pelayan: " + err.message);
+      }
+    }
+
+    // 7. Cetakan Bluetooth & Semula
+    function handleReprintThermalReceipt() {
+      playBeep('print');
+      alert("Menghantar arahan cetakan semula ke pencetak Bluetooth POS-5802...\n\n[ Resit Kompaun Berjaya Dicetak ]");
+    }
+
+    // 8. Integrasi Web Bluetooth API Sebenar
+    async function connectRealWebBluetoothPrinter() {
+      if (navigator.bluetooth) {
+        try {
+          const device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', '49535343-fe7d-4ae5-8fa9-9fafd205e455']
+          });
+          alert(`Berjaya memadankan peranti:\nNama: ${device.name || 'Pencetak ESC/POS'}\nID: ${device.id}`);
+          document.getElementById('printer-badge-status').innerText = `● TERSAMBUNG (${device.name || 'Bluetooth POS'})`;
+        } catch (e) {
+          alert("Pemberitahuan Bluetooth: " + e.message);
+        }
+      } else {
+        alert("Mengimbas gelombang Bluetooth...\n\nPeranti Ditemui: POS-5802 Bluetooth (00:11:22:33:44:55)\nStatus: Dipadankan Berjaya mengikut protokol ESC/POS!");
+      }
+    }
+
+    function testPrintSampleReceipt() {
+      playBeep('print');
+      alert("Menghantar fail ujian ESC/POS ke pencetak...\n\n--------------------------------\n   MAJLIS DAERAH JELEBU\n   UJIAN PENCETAK 58MM BERJAYA\n--------------------------------");
+    }
+
+    // 9. Sokongan Kamera Langsung (getUserMedia)
+    let camStream = null;
+    async function toggleRealCameraStream() {
+      const video = document.getElementById('camera-video-stream');
+      const grid = document.getElementById('camera-placeholder-grid');
+      const btn = document.getElementById('btn-toggle-cam');
+
+      if (camStream) {
+        camStream.getTracks().forEach(t => t.stop());
+        camStream = null;
+        video.classList.add('hidden');
+        grid.classList.remove('hidden');
+        btn.innerText = "📷 Kamera Hidup";
+      } else {
+        try {
+          camStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: "environment" } }
+          });
+          video.srcObject = camStream;
+          video.classList.remove('hidden');
+          grid.classList.add('hidden');
+          btn.innerText = "⏹ Tutup Kamera";
+        } catch (e) {
+          alert("Kamera perkakasan tidak dapat diakses atau tiada kebenaran. Sistem akan kekal menggunakan mod simulasi AI OCR yang aktif.");
+        }
+      }
+    }
+
+    // 10. Jam Kamera Masa Nyata
+    setInterval(() => {
+      const d = new Date();
+      const el = document.getElementById('camera-clock');
+      if (el) el.innerText = d.toTimeString().split(' ')[0];
+    }, 1000);
+
+    // Permulaan Aplikasi: Semak Sesi Pegawai
+    window.onload = () => {
+      const savedSession = sessionStorage.getItem('ezpark_enforcer_session');
+      if (savedSession) {
+        currentOfficer = JSON.parse(savedSession);
+        document.getElementById('header-officer-info').innerText = `${currentOfficer.name.split(' ')[0]} (${currentOfficer.badge}) | ${currentOfficer.zone.split(' - ')[0]}`;
+        document.getElementById('stats-officer-subtext').innerText = `Pegawai: ${currentOfficer.name} (${currentOfficer.badge})`;
+        switchScreen('scanner');
+        scanPlate('NDJ 8821');
+      } else {
+        document.getElementById('app-header').classList.remove('hidden');
+        document.getElementById('app-bottom-nav').classList.add('hidden');
+        switchScreen('login');
+      }
+    };
+  </script>
+</body>
+</html>

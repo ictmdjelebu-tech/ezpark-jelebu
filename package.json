@@ -1,0 +1,27 @@
+{
+  "name": "ezpark-jelebu-api",
+  "version": "1.0.0",
+  "description": "Sistem Pengurusan Letak Kereta & Penguatkuasaan Bersepadu Majlis Daerah Jelebu (MDJ)",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [
+    "ezpark",
+    "jelebu",
+    "mdj",
+    "parking",
+    "hitpay",
+    "enforcement",
+    "pbt"
+  ],
+  "author": "Majlis Daerah Jelebu",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "localtunnel": "^2.0.2"
+  }
+}

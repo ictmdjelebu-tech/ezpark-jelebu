@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>EZ Park - Jelebu | Aplikasi Pemandu</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Mobile-first styling */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .safe-bottom {
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 70px);
+    }
+    /* Hide scrollbar for clean app feel */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex justify-center">
+
+  <!-- Mobile App Wrapper (Responsif: Max width 480px di desktop, 100% di telefon bimbit) -->
+  <div class="w-full max-w-md bg-slate-50 min-h-screen flex flex-col shadow-2xl relative">
+
+    <!-- Top App Bar (Header PBT Jelebu) -->
+    <header class="bg-gradient-to-r from-red-900 via-red-950 to-slate-900 text-white p-4 sticky top-0 z-30 shadow-md border-b-2 border-amber-400">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="bg-white p-1 rounded-xl shadow border border-amber-400 flex items-center justify-center">
+            <img src="logo_mdj.jpg" alt="Logo MDJ" class="h-8 w-auto object-contain">
+          </div>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <h1 class="text-base font-black tracking-wide text-white">EZ PARK - JELEBU</h1>
+              <span class="bg-amber-400 text-red-950 text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">MDJ</span>
+            </div>
+            <p class="text-[11px] text-amber-200">Majlis Daerah Jelebu</p>
+          </div>
+        </div>
+
+        <!-- Quick Status Badge -->
+        <div id="header-active-pill" class="hidden">
+          <button onclick="switchScreen('timer')" class="flex items-center bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow animate-pulse">
+            <span class="w-1.5 h-1.5 rounded-full bg-white mr-1.5"></span>
+            <span id="header-timer-text">Aktif: 45m</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Screens Container -->
+    <main class="flex-1 overflow-y-auto safe-bottom p-4">
+
+      <!-- =================================================== -->
+      <!-- SKRIN 1: BAYAR PARKIR (SKRIN UTAMA)                 -->
+      <!-- =================================================== -->
+      <section id="screen-parking" class="app-screen space-y-4 block">
+        
+        <!-- Kad Kenderaan Dipilih & Butang Tukar -->
+        <div class="bg-slate-900 text-white rounded-2xl p-4 shadow border border-amber-400">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Kenderaan Anda:</span>
+            <button onclick="switchScreen('vehicles')" class="text-xs bg-red-800 hover:bg-red-700 text-white font-bold px-2.5 py-1 rounded-lg flex items-center space-x-1">
+              <span>⇄ Tukar / Tambah</span>
+            </button>
+          </div>
+          <div class="flex items-baseline justify-between mt-1">
+            <div>
+              <div id="active-car-plate" class="text-2xl font-black font-mono tracking-widest text-white">NDJ 8821</div>
+              <div id="active-car-desc" class="text-xs text-slate-300 mt-0.5">Proton Persona (Hitam)</div>
+            </div>
+            <span class="text-[10px] bg-emerald-700 text-white px-2 py-0.5 rounded-full font-bold">Aktif</span>
+          </div>
+        </div>
+
+        <!-- Pemilihan Kawasan / Zon Letak Kereta MDJ (Auto-Sync) -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-xs font-bold text-slate-700">Pilih Kawasan / Zon Parkir</label>
+            <span class="text-[10px] text-emerald-700 font-semibold flex items-center">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span> Auto-Sync MDJ
+            </span>
+          </div>
+          <div id="driver-zones-list" class="space-y-2">
+            <!-- Dimuatkan secara dinamik terus daripada Pelayan Backend API -->
+            <div class="p-3 text-center text-xs text-slate-400">Menyegerak senarai zon MDJ terkini...</div>
+          </div>
+          <div class="text-[11px] text-slate-500 mt-2 flex items-center">
+            <span>ℹ️ Zon baharu yang dimasukkan oleh Superadmin akan terus dikemas kini di sini secara automatik.</span>
+          </div>
+        </div>
+
+        <!-- Pemilihan Tempoh Masa -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Tempoh Masa Letak Kereta</label>
+          <div class="grid grid-cols-3 gap-2 text-xs">
+            
+            <button type="button" onclick="selectDurationOption(30, this)" class="dur-btn p-2.5 rounded-xl border-2 border-slate-200 text-center font-medium bg-white hover:border-red-400">
+              <div class="text-[11px]">30 Minit</div>
+              <div class="font-bold text-red-800 mt-0.5" id="price-dur-30">RM 0.30</div>
+            </button>
+
+            <button type="button" onclick="selectDurationOption(60, this)" class="dur-btn p-2.5 rounded-xl border-2 border-red-700 bg-red-50 text-center font-bold">
+              <span class="text-[9px] bg-red-700 text-white px-1 rounded block mb-0.5">Disyorkan</span>
+              <div class="text-[11px]">1 Jam</div>
+              <div class="font-bold text-red-800 mt-0.5" id="price-dur-60">RM 0.60</div>
+            </button>
+
+            <button type="button" onclick="selectDurationOption(120, this)" class="dur-btn p-2.5 rounded-xl border-2 border-slate-200 text-center font-medium bg-white hover:border-red-400">
+              <div class="text-[11px]">2 Jam</div>
+              <div class="font-bold text-red-800 mt-0.5" id="price-dur-120">RM 1.20</div>
+            </button>
+
+            <button type="button" onclick="selectDurationOption(180, this)" class="dur-btn p-2.5 rounded-xl border-2 border-slate-200 text-center font-medium bg-white hover:border-red-400">
+              <div class="text-[11px]">3 Jam</div>
+              <div class="font-bold text-red-800 mt-0.5" id="price-dur-180">RM 1.80</div>
+            </button>
+
+            <button type="button" onclick="selectDurationOption(540, this)" class="dur-btn p-2.5 rounded-xl border-2 border-slate-200 text-center font-medium bg-white hover:border-red-400">
+              <div class="text-[11px]">Pas Harian</div>
+              <div class="font-bold text-red-800 mt-0.5" id="price-dur-day">RM 4.00</div>
+            </button>
+
+            <button type="button" onclick="selectDurationOption(43200, this)" class="dur-btn p-2.5 rounded-xl border-2 border-slate-200 text-center font-medium bg-white hover:border-red-400">
+              <div class="text-[11px]">Pas Bulanan</div>
+              <div class="font-bold text-red-800 mt-0.5" id="price-dur-month">RM 60.00</div>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Butang Bayar & Kaedah Pembayaran HitPay -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-600 font-semibold">Jumlah Perlu Dibayar:</span>
+            <span id="display-total-amount" class="text-2xl font-black text-red-950">RM 0.60</span>
+          </div>
+
+          <button onclick="openHitpayCheckoutModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center space-x-2 transition text-sm">
+            <span>Bayar via HitPay (DuitNow QR / FPX)</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
+
+          <div class="flex items-center justify-center space-x-2 text-[11px] text-slate-400">
+            <span>Dilindungi secara selamat oleh</span>
+            <span class="font-black text-slate-700 text-xs">HitPay</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =================================================== -->
+      <!-- SKRIN 2: PENGURUSAN KERETA SAYA (DAFTAR / TUKAR)   -->
+      <!-- =================================================== -->
+      <section id="screen-vehicles" class="app-screen space-y-4 hidden">
+        
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-black text-slate-900">Kenderaan Saya</h2>
+            <p class="text-xs text-slate-500">Urus senarai kenderaan atau daftarkan kereta baharu</p>
+          </div>
+          <button onclick="openAddCarModal()" class="bg-red-800 hover:bg-red-900 text-white text-xs font-bold px-3 py-2 rounded-xl shadow flex items-center space-x-1">
+            <span>+ Tambah Kereta</span>
+          </button>
+        </div>
+
+        <!-- Senarai Kenderaan -->
+        <div id="driver-cars-list" class="space-y-2.5">
+          <!-- Loaded dynamically from array/localStorage -->
+        </div>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-900">
+          <span class="font-bold">💡 Tip Pengesahan:</span>
+          <p class="text-[11px] mt-0.5">Memasukkan jenama, model, dan warna kereta yang tepat membantu pegawai penguatkuasa mengesahkan kenderaan fizikal anda dan mengelakkan saman silap.</p>
+        </div>
+
+      </section>
+
+      <!-- =================================================== -->
+      <!-- SKRIN 3: PEMASA AKTIF (COUNTDOWN TIMER)             -->
+      <!-- =================================================== -->
+      <section id="screen-timer" class="app-screen space-y-4 hidden">
+        
+        <div class="text-center pt-2">
+          <span class="inline-flex items-center px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span> Sesi Parkir Sedang Berjalan
+          </span>
+          <div class="text-xs text-slate-500 mt-1" id="timer-screen-zone">Zon A - Pekan Kuala Klawang</div>
+        </div>
+
+        <!-- Bulatan Animasi Pemasa -->
+        <div class="w-52 h-52 mx-auto rounded-full border-8 border-emerald-500 flex flex-col items-center justify-center bg-white shadow-inner my-2">
+          <span class="text-xs font-semibold text-slate-400 tracking-wider">BAKI MASA</span>
+          <span id="countdown-display" class="text-4xl font-black text-slate-800 font-mono my-1">45:00</span>
+          <span id="countdown-expiry-time" class="text-xs font-bold text-emerald-600">Tamat: 01:45 PM</span>
+        </div>
+
+        <!-- Info Kenderaan Aktif -->
+        <div class="bg-slate-900 text-white rounded-2xl p-4 text-center border border-amber-400 shadow">
+          <div class="text-[10px] text-amber-300 font-bold tracking-wider uppercase">Kenderaan Sah Berbayar</div>
+          <div id="timer-active-plate" class="text-2xl font-black font-mono tracking-widest text-white mt-0.5">NDJ 8821</div>
+          <div id="timer-active-model" class="text-xs text-slate-300">Proton Persona (Hitam)</div>
+        </div>
+
+        <!-- Pilihan Tambah Masa (Extend) -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+          <span class="font-bold text-xs text-slate-700 block">Tambah Masa Letak Kereta (Tanpa Balik ke Kereta)</span>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <button onclick="handleExtendParking(30, 0.30)" class="p-2.5 rounded-xl bg-slate-100 hover:bg-red-50 hover:border-red-400 border font-bold text-slate-800 text-center">
+              <div>+ 30 Minit</div>
+              <div class="text-red-700 font-black">RM 0.30</div>
+            </button>
+            <button onclick="handleExtendParking(60, 0.60)" class="p-2.5 rounded-xl bg-slate-100 hover:bg-red-50 hover:border-red-400 border font-bold text-slate-800 text-center">
+              <div>+ 1 Jam</div>
+              <div class="text-red-700 font-black">RM 0.60</div>
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- =================================================== -->
+      <!-- SKRIN 4: SEMAK & BAYAR SAMAN MDJ                    -->
+      <!-- =================================================== -->
+      <section id="screen-saman" class="app-screen space-y-4 hidden">
+        
+        <div class="text-center">
+          <h2 class="text-lg font-black text-slate-900">Semakan Kompaun Parkir MDJ</h2>
+          <p class="text-xs text-slate-500">Semak dan bayar kompaun secara terus melalui telefon anda</p>
+        </div>
+
+        <!-- Carian Plat -->
+        <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 flex gap-2">
+          <input type="text" id="saman-search-input" value="NDJ 8821" class="flex-1 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono font-bold uppercase text-center focus:outline-none focus:border-red-700" placeholder="MASUKKAN NO. PLAT">
+          <button onclick="searchSamanByPlate()" class="bg-red-800 hover:bg-red-900 text-white text-xs font-bold px-4 py-2 rounded-xl shadow">
+            Cari Saman
+          </button>
+        </div>
+
+        <!-- Keputusan Saman -->
+        <div id="saman-results-container" class="space-y-3">
+          <!-- Loaded dynamically -->
+        </div>
+
+      </section>
+
+      <!-- =================================================== -->
+      <!-- SKRIN 5: SEJARAH TRANSAKSI & RESIT                  -->
+      <!-- =================================================== -->
+      <section id="screen-history" class="app-screen space-y-4 hidden">
+        <div>
+          <h2 class="text-lg font-black text-slate-900">Sejarah Pembayaran</h2>
+          <p class="text-xs text-slate-500">Rekod bayaran parkir dan kompaun lepas</p>
+        </div>
+
+        <div id="history-list-container" class="space-y-2.5">
+          <!-- Loaded dynamically -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar (Tab App) -->
+    <nav class="bg-white border-t border-slate-200 fixed bottom-0 left-0 right-0 max-w-md mx-auto z-40 flex justify-around py-2 shadow-lg">
+      <button onclick="switchScreen('parking')" id="nav-btn-parking" class="app-nav-btn flex flex-col items-center text-red-800 font-bold text-[10px] w-1/5">
+        <span class="text-lg mb-0.5">🅿️</span>
+        <span>Bayar</span>
+      </button>
+
+      <button onclick="switchScreen('vehicles')" id="nav-btn-vehicles" class="app-nav-btn flex flex-col items-center text-slate-400 hover:text-slate-700 font-semibold text-[10px] w-1/5">
+        <span class="text-lg mb-0.5">🚗</span>
+        <span>Kereta</span>
+      </button>
+
+      <button onclick="switchScreen('timer')" id="nav-btn-timer" class="app-nav-btn flex flex-col items-center text-slate-400 hover:text-slate-700 font-semibold text-[10px] w-1/5 relative">
+        <span class="text-lg mb-0.5">⏱️</span>
+        <span>Pemasa</span>
+        <span id="nav-timer-dot" class="w-2 h-2 rounded-full bg-emerald-500 absolute top-1 right-5 hidden"></span>
+      </button>
+
+      <button onclick="switchScreen('saman')" id="nav-btn-saman" class="app-nav-btn flex flex-col items-center text-slate-400 hover:text-slate-700 font-semibold text-[10px] w-1/5">
+        <span class="text-lg mb-0.5">📜</span>
+        <span>Saman</span>
+      </button>
+
+      <button onclick="switchScreen('history')" id="nav-btn-history" class="app-nav-btn flex flex-col items-center text-slate-400 hover:text-slate-700 font-semibold text-[10px] w-1/5">
+        <span class="text-lg mb-0.5">📑</span>
+        <span>Resit</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- =================================================== -->
+  <!-- MODAL: DAFTAR KENDERAAN BAHARU                      -->
+  <!-- =================================================== -->
+  <div id="modal-add-car" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-200">
+      
+      <div class="bg-gradient-to-r from-red-900 to-slate-900 text-white p-4 flex items-center justify-between border-b-2 border-amber-400">
+        <h3 class="font-bold text-sm">Daftar Kenderaan Baharu</h3>
+        <button onclick="closeAddCarModal()" class="text-white hover:text-amber-300 font-bold">✕</button>
+      </div>
+
+      <form onsubmit="handleSaveNewVehicle(event)" class="p-4 space-y-3 text-xs text-slate-700">
+        <div>
+          <label class="block font-bold mb-1">Nombor Plat Kenderaan <span class="text-red-600">*</span></label>
+          <input type="text" id="reg-plate" required placeholder="CONTOH: NDJ 9931" class="w-full border border-slate-300 rounded-xl p-2.5 font-mono font-bold uppercase text-center focus:ring-1 focus:ring-red-700 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold mb-1">Jenama <span class="text-red-600">*</span></label>
+            <select id="reg-brand" class="w-full border border-slate-300 rounded-xl p-2 bg-white font-semibold">
+              <option>Proton</option>
+              <option>Perodua</option>
+              <option>Toyota</option>
+              <option>Honda</option>
+              <option>Nissan</option>
+              <option>Mitsubishi</option>
+              <option>Mazda</option>
+              <option>Lain-lain</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold mb-1">Model <span class="text-red-600">*</span></label>
+            <input type="text" id="reg-model" required placeholder="Saga / Myvi / Vios" class="w-full border border-slate-300 rounded-xl p-2 font-semibold">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold mb-1">Warna <span class="text-red-600">*</span></label>
+            <select id="reg-color" class="w-full border border-slate-300 rounded-xl p-2 bg-white font-semibold">
+              <option>Putih</option>
+              <option>Hitam</option>
+              <option>Perak (Silver)</option>
+              <option>Kelabu</option>
+              <option>Merah</option>
+              <option>Biru</option>
+              <option>Lain-lain</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold mb-1">Jenis Kenderaan</label>
+            <select id="reg-type" class="w-full border border-slate-300 rounded-xl p-2 bg-white font-semibold">
+              <option>Saloon / Sedan</option>
+              <option>Hatchback</option>
+              <option>SUV</option>
+              <option>MPV</option>
+              <option>Motosikal</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2 border-t">
+          <button type="button" onclick="closeAddCarModal()" class="px-3 py-2 bg-slate-200 rounded-xl font-semibold">Batal</button>
+          <button type="submit" class="px-4 py-2 bg-red-800 hover:bg-red-900 text-white font-bold rounded-xl shadow">
+            Simpan Kenderaan
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- =================================================== -->
+  <!-- MODAL: CHECKOUT HITPAY (DUITNOW QR & FPX)          -->
+  <!-- =================================================== -->
+  <div id="modal-hitpay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-200">
+      
+      <!-- HitPay Header -->
+      <div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="font-black text-lg">HitPay</span>
+          <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold">Gerbang Selamat</span>
+        </div>
+        <button onclick="closeHitpayModal()" class="text-white hover:text-slate-200 font-bold">✕</button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs text-slate-700">
+        <div class="text-center">
+          <span class="text-xs text-slate-500 font-medium">Pembayaran kepada Majlis Daerah Jelebu</span>
+          <div class="text-3xl font-black text-slate-900 my-1" id="hitpay-modal-amount">RM 0.60</div>
+          <div class="text-[11px] font-mono text-slate-500" id="hitpay-modal-ref">Ref: EZP-20261111-8891</div>
+        </div>
+
+        <!-- Pilihan Kaedah Bayaran -->
+        <div class="border rounded-2xl p-3 bg-slate-50 space-y-3">
+          <span class="font-bold text-[11px] text-slate-600 block">PILIH KAEDAH BAYARAN:</span>
+          
+          <!-- DuitNow QR (Recommended) -->
+          <div class="p-3 bg-white rounded-xl border-2 border-emerald-600 flex items-center justify-between cursor-pointer">
+            <div class="flex items-center space-x-2.5">
+              <span class="text-xl">📱</span>
+              <div>
+                <div class="font-bold text-xs text-slate-900">DuitNow QR (Imbas & Bayar)</div>
+                <div class="text-[10px] text-slate-500">Maybank, CIMB, TnG, Bank Islam dll.</div>
+              </div>
+            </div>
+            <span class="text-emerald-700 font-bold">✓</span>
+          </div>
+
+          <!-- DuitNow Simulated QR Code -->
+          <div class="bg-white p-3 rounded-xl border flex flex-col items-center justify-center text-center">
+            <div class="w-32 h-32 bg-slate-900 rounded-lg flex items-center justify-center text-white text-[10px] font-mono p-2">
+              [ KOD QR DUITNOW DINAMIK HITPAY ]
+            </div>
+            <span class="text-[10px] text-slate-500 mt-2 font-medium">Buka aplikasi bank anda & imbas kod di atas</span>
+          </div>
+        </div>
+
+        <button onclick="confirmHitpayPaymentSuccess()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow text-xs">
+          Simulasikan Pengesahan Bank Selesai
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JavaScript Logik App Pemandu EZ Park -->
+  <script>
+    // Data Kenderaan Pengguna (Disimpan dalam memory & localStorage)
+    let userVehicles = [
+      { plate: "NDJ 8821", brand: "Proton", model: "Persona", color: "Hitam", type: "Saloon", isPrimary: true },
+      { plate: "NDB 4210", brand: "Perodua", model: "Myvi", color: "Putih", type: "Hatchback", isPrimary: false }
+    ];
+
+    let currentCar = userVehicles[0];
+    let currentZone = "ZON_A";
+    let currentDurationMinutes = 60;
+    let currentTotalAmount = 0.60;
+    let activeSession = null;
+    let countdownInterval = null;
+
+    // Rates MDJ Dinamik daripada Pelayan
+    let zoneRates = {
+      ZON_A: { rate: 0.60, name: "Zon A - Pekan Kuala Klawang" },
+      ZON_B: { rate: 0.40, name: "Zon B - Simpang Pertang & Titi" },
+      ZON_KHAS: { rate: 0.80, name: "Zon Khas - Hospital Jelebu" }
+    };
+
+    // Muat Turun Zon Terkini secara Dinamik dari Pelayan
+    async function loadZonesFromAPI() {
+      try {
+        const res = await fetch('/api/v1/zones');
+        const zones = await res.json();
+
+        if (Array.isArray(zones) && zones.length > 0) {
+          zoneRates = {};
+          zones.forEach(z => {
+            zoneRates[z.zone_code] = {
+              rate: z.rate_first_hour,
+              name: z.zone_name,
+              hours: z.operating_hours
+            };
+          });
+
+          // Jika zon semasa tiada dalam senarai, pilih yang pertama
+          if (!zoneRates[currentZone]) {
+            currentZone = zones[0].zone_code;
+          }
+
+          const container = document.getElementById('driver-zones-list');
+          container.innerHTML = zones.map(z => `
+            <label class="zone-option flex items-center justify-between p-3 rounded-xl border-2 ${z.zone_code === currentZone ? 'border-red-700 bg-red-50/60' : 'border-slate-200 bg-white hover:border-red-400'} cursor-pointer transition">
+              <div class="flex items-center space-x-2.5">
+                <input type="radio" name="parking-zone" value="${z.zone_code}" ${z.zone_code === currentZone ? 'checked' : ''} onchange="handleZoneChange(this)" class="w-4 h-4 text-red-700 focus:ring-red-600">
+                <div>
+                  <div class="font-bold text-xs text-slate-900">${z.zone_name}</div>
+                  <div class="text-[10px] text-slate-500">${z.operating_hours}</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-black text-red-800">RM ${z.rate_first_hour.toFixed(2)}</span>
+                <span class="text-[10px] text-slate-500 block">/ jam</span>
+              </div>
+            </label>
+          `).join('');
+
+          recalculateAmount();
+        }
+      } catch (err) {
+        console.warn("Menggunakan data zon fallback:", err);
+      }
+    }
+
+    // Navigasi Tab Skrin
+    function switchScreen(screenName) {
+      document.querySelectorAll('.app-screen').forEach(s => s.classList.add('hidden'));
+      document.querySelectorAll('.app-nav-btn').forEach(btn => {
+        btn.classList.remove('text-red-800');
+        btn.classList.add('text-slate-400');
+      });
+
+      const target = document.getElementById('screen-' + screenName);
+      if (target) target.classList.remove('hidden');
+
+      const activeBtn = document.getElementById('nav-btn-' + screenName);
+      if (activeBtn) {
+        activeBtn.classList.add('text-red-800');
+        activeBtn.classList.remove('text-slate-400');
+      }
+
+      if (screenName === 'vehicles') renderVehiclesList();
+      if (screenName === 'history') renderHistoryList();
+    }
+
+    // Tukar Zon
+    function handleZoneChange(radio) {
+      currentZone = radio.value;
+      recalculateAmount();
+    }
+
+    // Tukar Tempoh Masa
+    function selectDurationOption(mins, btn) {
+      currentDurationMinutes = mins;
+      document.querySelectorAll('.dur-btn').forEach(b => {
+        b.className = "dur-btn p-2.5 rounded-xl border-2 border-slate-200 text-center font-medium bg-white hover:border-red-400";
+      });
+      btn.className = "dur-btn p-2.5 rounded-xl border-2 border-red-700 bg-red-50 text-center font-bold";
+      recalculateAmount();
+    }
+
+    function recalculateAmount() {
+      const z = zoneRates[currentZone];
+      if (currentDurationMinutes === 30) {
+        currentTotalAmount = z.rate / 2;
+      } else if (currentDurationMinutes === 60) {
+        currentTotalAmount = z.rate;
+      } else if (currentDurationMinutes === 120) {
+        currentTotalAmount = z.rate * 2;
+      } else if (currentDurationMinutes === 180) {
+        currentTotalAmount = z.rate * 3;
+      } else if (currentDurationMinutes === 540) {
+        currentTotalAmount = 4.00; // Pas harian
+      } else if (currentDurationMinutes === 43200) {
+        currentTotalAmount = 60.00; // Pas bulanan
+      }
+      document.getElementById('display-total-amount').innerText = 'RM ' + currentTotalAmount.toFixed(2);
+    }
+
+    // Senarai Kenderaan
+    function renderVehiclesList() {
+      const container = document.getElementById('driver-cars-list');
+      container.innerHTML = userVehicles.map((car, idx) => `
+        <div class="p-3.5 rounded-2xl border-2 ${car.plate === currentCar.plate ? 'border-red-700 bg-red-50/60' : 'border-slate-200 bg-white'} flex justify-between items-center cursor-pointer shadow-sm" onclick="selectActiveVehicle(${idx})">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-black font-mono text-base text-slate-900">${car.plate}</span>
+              ${car.plate === currentCar.plate ? '<span class="bg-red-700 text-white text-[9px] font-bold px-1.5 py-0.2 rounded">Sedang Dipilih</span>' : ''}
+            </div>
+            <div class="text-xs text-slate-600 mt-0.5"><strong>${car.brand}</strong> ${car.model}</div>
+            <div class="text-[10px] text-slate-500">Warna: ${car.color} | ${car.type}</div>
+          </div>
+          <button class="text-xs text-blue-600 font-bold hover:underline">
+            ${car.plate === currentCar.plate ? '✓ Terpilih' : 'Pilih'}
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function selectActiveVehicle(index) {
+      currentCar = userVehicles[index];
+      document.getElementById('active-car-plate').innerText = currentCar.plate;
+      document.getElementById('active-car-desc').innerText = `${currentCar.brand} ${currentCar.model} (${currentCar.color})`;
+      document.getElementById('timer-active-plate').innerText = currentCar.plate;
+      document.getElementById('timer-active-model').innerText = `${currentCar.brand} ${currentCar.model} (${currentCar.color})`;
+      switchScreen('parking');
+    }
+
+    // Modal Tambah Kereta
+    function openAddCarModal() { document.getElementById('modal-add-car').classList.remove('hidden'); }
+    function closeAddCarModal() { document.getElementById('modal-add-car').classList.add('hidden'); }
+
+    function handleSaveNewVehicle(e) {
+      e.preventDefault();
+      const newV = {
+        plate: document.getElementById('reg-plate').value.trim().toUpperCase(),
+        brand: document.getElementById('reg-brand').value,
+        model: document.getElementById('reg-model').value.trim(),
+        color: document.getElementById('reg-color').value,
+        type: document.getElementById('reg-type').value,
+        isPrimary: false
+      };
+
+      userVehicles.unshift(newV);
+      currentCar = newV;
+      closeAddCarModal();
+      selectActiveVehicle(0);
+      alert(`Kenderaan ${newV.plate} (${newV.brand} ${newV.model}) berjaya didaftarkan!`);
+    }
+
+    // Modal HitPay & Checkout
+    function openHitpayCheckoutModal() {
+      document.getElementById('hitpay-modal-amount').innerText = 'RM ' + currentTotalAmount.toFixed(2);
+      document.getElementById('hitpay-modal-ref').innerText = `Ref: EZP-${Date.now().toString().slice(-6)}`;
+      document.getElementById('modal-hitpay').classList.remove('hidden');
+    }
+
+    function closeHitpayModal() {
+      document.getElementById('modal-hitpay').classList.add('hidden');
+    }
+
+    async function confirmHitpayPaymentSuccess() {
+      closeHitpayModal();
+
+      // Hubungi Backend API Pelayan
+      try {
+        const res = await fetch('/api/v1/parking/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plate_number: currentCar.plate,
+            zone_code: currentZone,
+            duration_minutes: currentDurationMinutes,
+            brand: currentCar.brand,
+            model: currentCar.model,
+            color: currentCar.color
+          })
+        });
+        const data = await res.json();
+        
+        activeSession = data.session;
+        startActiveCountdown(currentDurationMinutes);
+        alert("Bayaran Berjaya disahkan oleh HitPay! Sesi parkir kini aktif.");
+        switchScreen('timer');
+      } catch (err) {
+        alert("Sesi diaktifkan secara setempat.");
+        startActiveCountdown(currentDurationMinutes);
+        switchScreen('timer');
+      }
+    }
+
+    // Pemasa Aktif Detik-ke-Detik
+    function startActiveCountdown(minutes) {
+      let totalSeconds = minutes * 60;
+      const expiry = new Date(Date.now() + totalSeconds * 1000);
+
+      document.getElementById('countdown-expiry-time').innerText = `Tamat: ${expiry.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+      document.getElementById('timer-screen-zone').innerText = zoneRates[currentZone].name;
+      document.getElementById('header-active-pill').classList.remove('hidden');
+      document.getElementById('nav-timer-dot').classList.remove('hidden');
+
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      countdownInterval = setInterval(() => {
+        totalSeconds--;
+        if (totalSeconds <= 0) {
+          clearInterval(countdownInterval);
+          document.getElementById('countdown-display').innerText = "00:00";
+          document.getElementById('header-active-pill').classList.add('hidden');
+          document.getElementById('nav-timer-dot').classList.add('hidden');
+          alert("PERHATIAN: Masa parkir kenderaan anda telah TAMAT! Sila tambah masa.");
+          return;
+        }
+
+        const m = Math.floor(totalSeconds / 60);
+        const s = totalSeconds % 60;
+        const display = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        document.getElementById('countdown-display').innerText = display;
+        document.getElementById('header-timer-text').innerText = `Aktif: ${m}m`;
+      }, 1000);
+    }
+
+    function handleExtendParking(extraMins, price) {
+      if (confirm(`Tambah masa parkir sebanyak ${extraMins} minit (RM ${price.toFixed(2)}) via HitPay?`)) {
+        startActiveCountdown(extraMins + 30);
+        alert("Masa parkir berjaya ditambah!");
+      }
+    }
+
+    // Semak Saman
+    async function searchSamanByPlate() {
+      const plate = document.getElementById('saman-search-input').value.trim().toUpperCase();
+      const div = document.getElementById('saman-results-container');
+      div.innerHTML = '<div class="text-xs text-center text-slate-500 py-3">Menyemak rekod kompaun MDJ...</div>';
+
+      try {
+        const res = await fetch(`/api/v1/compounds/search?plate=${plate}`);
+        const data = await res.json();
+
+        if (data.total_found === 0) {
+          div.innerHTML = `
+            <div class="bg-emerald-50 border border-emerald-300 rounded-2xl p-4 text-center">
+              <span class="text-2xl">🎉</span>
+              <div class="font-bold text-xs text-emerald-900 mt-1">Tiada Saman Tertunggak</div>
+              <div class="text-[11px] text-emerald-700 mt-0.5">Kenderaan ${plate} tiada rekod kompaun tertunggak di Majlis Daerah Jelebu.</div>
+            </div>
+          `;
+        } else {
+          div.innerHTML = data.compounds.map(c => `
+            <div class="bg-red-50 border border-red-200 rounded-2xl p-4 text-xs space-y-2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] font-bold bg-red-200 text-red-800 px-2 py-0.5 rounded">TERTUNGGAK</span>
+                  <div class="font-bold font-mono text-sm text-red-950 mt-1">${c.notice_number}</div>
+                  <div class="text-[10px] text-slate-500">${new Date(c.issued_at).toLocaleString()}</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-base font-black text-red-700">RM ${c.fine_amount.toFixed(2)}</div>
+                </div>
+              </div>
+              <div class="text-[11px] text-slate-700 font-medium">${c.uuk_code}: ${c.uuk_title || 'Kesalahan Parkir'}</div>
+              <div class="text-[10px] text-slate-500">Lokasi: ${c.location_description}</div>
+              <button onclick="paySamanViaHitpay('${c.notice_number}', ${c.fine_amount})" class="w-full bg-red-800 hover:bg-red-900 text-white font-bold py-2 rounded-xl text-xs shadow mt-1">
+                Bayar Saman via HitPay
+              </button>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        div.innerHTML = '<div class="text-xs text-red-500 text-center">Ralat menyemak saman.</div>';
+      }
+    }
+
+    async function paySamanViaHitpay(notice, amount) {
+      if (!confirm(`Sahkan bayaran kompaun ${notice} sebanyak RM ${amount.toFixed(2)} melalui gerbang pembayaran DuitNow QR / HitPay?`)) {
+        return;
+      }
+      try {
+        const res = await fetch(`/api/v1/compounds/${encodeURIComponent(notice)}/pay`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ payment_method: 'DUITNOW_QR_HITPAY' })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(`✅ Bayaran kompaun ${notice} telah disahkan berjaya!\n\nNo. Rujukan: ${data.compound.hitpay_reference_id}\nStatus: SELESAI (PAID_HITPAY)`);
+          searchSamanByPlate();
+        } else {
+          alert(data.error || "Ralat memproses bayaran.");
+        }
+      } catch (err) {
+        alert("Ralat sambungan ke pelayan MDJ.");
+      }
+    }
+
+    // Sejarah & Resit
+    function renderHistoryList() {
+      const container = document.getElementById('history-list-container');
+      container.innerHTML = `
+        <div class="bg-white border rounded-2xl p-3.5 shadow-sm text-xs space-y-1">
+          <div class="flex justify-between font-bold">
+            <span class="text-slate-900">Sesi Parkir: NDJ 8821</span>
+            <span class="text-emerald-700">RM 0.60 (BERJAYA)</span>
+          </div>
+          <div class="text-[11px] text-slate-500">Zon A - Pekan Kuala Klawang (1 Jam)</div>
+          <div class="flex justify-between items-center text-[10px] text-slate-400 pt-1 border-t mt-1">
+            <span>HitPay DuitNow QR</span>
+            <button onclick="alert('Resit Rasmi Digital MDJ dipaparkan.')" class="text-blue-600 font-bold underline">Lihat Resit</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Auto-init
+    window.onload = () => {
+      renderVehiclesList();
+      loadZonesFromAPI();
+    };
+  </script>
+</body>
+</html>

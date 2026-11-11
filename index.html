@@ -1,0 +1,2186 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EZ Park - Jelebu | Majlis Daerah Jelebu</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Thermal receipt typography */
+    .thermal-receipt {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #fffef0;
+      border: 1px dashed #94a3b8;
+    }
+    .fade-in {
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media print {
+      header, nav, .no-print, button, input, select {
+        display: none !important;
+      }
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .tab-panel {
+        display: block !important;
+      }
+      #panel-enforcement, #panel-it {
+        display: none !important;
+      }
+      #panel-finance {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col font-sans">
+
+  <!-- ========================================================================= -->
+  <!-- SKRIN 1: UI / UX LOG MASUK PENTADBIRAN (LOGIN VIEW - BEBAS PILIHAN PROFIL) -->
+  <!-- ========================================================================= -->
+  <section id="view-login" class="min-h-screen flex flex-col justify-center items-center p-4 bg-gradient-to-br from-slate-950 via-red-950 to-slate-950 relative overflow-hidden">
+    
+    <!-- Corak Geometrik Halus -->
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
+
+    <div class="w-full max-w-md relative z-10 space-y-6 fade-in">
+      
+      <!-- Kepala Log Masuk & Logo MDJ -->
+      <div class="text-center space-y-2.5">
+        <div class="inline-block bg-white p-3.5 rounded-3xl shadow-2xl border-2 border-amber-400">
+          <img src="logo_mdj.jpg" alt="Logo Majlis Daerah Jelebu" class="h-16 w-auto object-contain mx-auto">
+        </div>
+        <div>
+          <h1 class="text-2xl font-black tracking-wide text-white">EZ PARK - JELEBU</h1>
+          <p class="text-xs text-amber-300 font-semibold mt-0.5">Sistem Pengurusan Tempat Letak Kereta Berpusat</p>
+          <p class="text-[11px] text-slate-400">Majlis Daerah Jelebu, Negeri Sembilan</p>
+        </div>
+      </div>
+
+      <!-- Kad Borang Log Masuk Rasmi (Bersih Tanpa Butang Profil Ujian) -->
+      <div class="bg-white/95 backdrop-blur-md rounded-3xl p-7 shadow-2xl border border-slate-200 space-y-5">
+        
+        <div class="border-b border-slate-100 pb-3">
+          <h2 class="text-sm font-bold text-slate-900">Log Masuk Kakitangan</h2>
+          <p class="text-[11px] text-slate-500">Sila masukkan kelayakan ID dan kata laluan rasmi MDJ anda.</p>
+        </div>
+
+        <!-- Borang Masuk -->
+        <form onsubmit="handleLoginSubmit(event)" class="space-y-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">ID Pengguna / Emel Rasmi</label>
+            <input type="text" id="input-login-username" value="azlan.ict@mdj.gov.my" required placeholder="cth: azlan.ict@mdj.gov.my atau KOP-104" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 font-mono font-bold text-slate-900 focus:outline-none focus:border-red-900 focus:ring-1 focus:ring-red-900 transition">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="font-bold text-slate-700">Kata Laluan</label>
+              <span class="text-[10px] text-slate-400 font-mono">* Laluan pantas: admin123</span>
+            </div>
+            <input type="password" id="input-login-password" value="admin123" required placeholder="Masukkan kata laluan" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 font-mono font-bold text-slate-900 focus:outline-none focus:border-red-900 focus:ring-1 focus:ring-red-900 transition">
+          </div>
+
+          <button type="submit" class="w-full bg-gradient-to-r from-red-900 via-red-950 to-slate-900 hover:from-red-950 hover:to-black text-amber-300 font-black py-3 rounded-xl shadow-lg flex items-center justify-center space-x-2 transition transform active:scale-95 text-xs tracking-wider">
+            <span>LOG MASUK KE SISTEM</span>
+            <span>➔</span>
+          </button>
+        </form>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+          <span>● Pelayan: Aktif (Masa Nyata)</span>
+          <span>Pematuhan Akta & Seksyen 90A</span>
+        </div>
+
+      </div>
+
+      <!-- Footer Keselamatan Kerajaan -->
+      <div class="text-center text-[10px] text-slate-400 space-y-1">
+        <p>Sistem Pengurusan Tempat Letak Kereta Majlis Daerah Jelebu</p>
+        <p class="text-slate-500 font-mono">Hak Cipta Terpelihara &copy; 2026 MDJ</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- SKRIN 2: DASHBOARD UTAMA (MAIN DASHBOARD VIEW)                            -->
+  <!-- ========================================================================= -->
+  <div id="view-dashboard" class="hidden flex-1 flex flex-col min-h-screen">
+
+    <!-- ======================================================== -->
+    <!-- BAR ATAS UTAMA: LOGO MDJ, JAM & NAMA PEGAWAI + KELUAR    -->
+    <!-- ======================================================== -->
+    <header class="bg-gradient-to-r from-red-950 via-red-900 to-slate-950 text-white shadow-xl sticky top-0 z-40 border-b-2 border-amber-400">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        
+        <!-- KIRI: Logo Rasmi MDJ & Nama Sistem -->
+        <div class="flex items-center space-x-3 flex-shrink-0">
+          <div class="bg-white p-1 rounded-xl shadow border border-amber-400">
+            <img src="logo_mdj.jpg" alt="Logo MDJ" class="h-10 w-auto object-contain">
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-lg font-black tracking-wide text-white">EZ PARK - JELEBU</span>
+              <span class="bg-amber-400 text-slate-950 font-black text-[9px] px-2 py-0.2 rounded-full uppercase tracking-wider">
+                MDJ Rasmi
+              </span>
+            </div>
+            <p class="text-[11px] text-amber-200">Majlis Daerah Jelebu, Negeri Sembilan</p>
+          </div>
+        </div>
+
+        <!-- TENGAH: Waktu dan Tarikh Sebenar (Dibesarkan & Ditonjolkan) -->
+        <div class="hidden md:flex flex-col items-center justify-center bg-black/30 border border-red-800/60 px-5 py-1.5 rounded-2xl shadow-inner">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="live-clock-time" class="text-xl sm:text-2xl font-black font-mono text-amber-300 tracking-wider">--:--:--</span>
+          </div>
+          <span id="live-clock-date" class="text-[11px] text-slate-200 font-semibold tracking-wide">Memuatkan tarikh...</span>
+        </div>
+
+        <!-- KANAN: Nama Pegawai yang Log Masuk & Ikon Keluar -->
+        <div class="flex items-center space-x-2.5 flex-shrink-0">
+          
+          <!-- Lencana Nama Pegawai -->
+          <div class="bg-slate-900/90 border border-slate-700 px-3.5 py-1.5 rounded-xl flex items-center space-x-2.5 shadow-inner">
+            <div class="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 font-black flex items-center justify-center text-sm shadow">
+              👤
+            </div>
+            <div class="text-left">
+              <div id="nav-officer-name" class="font-black text-white text-xs leading-tight">Azlan bin Baharom</div>
+              <div id="nav-officer-dept" class="text-[10px] text-amber-300 font-mono">Bahagian Teknologi Maklumat</div>
+            </div>
+          </div>
+
+          <!-- Pautan Pantas Aplikasi -->
+          <div class="hidden lg:flex items-center space-x-1.5">
+            <a href="/driver/" target="_blank" class="px-2.5 py-1.5 bg-blue-700 hover:bg-blue-600 text-white font-bold rounded-xl text-xs transition shadow flex items-center space-x-1" title="Buka Aplikasi Pemandu">
+              <span>📱 Pemandu ↗</span>
+            </a>
+            <a href="/enforcer/" target="_blank" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition shadow flex items-center space-x-1" title="Buka Aplikasi Penguatkuasa">
+              <span>👮 Penguatkuasa ↗</span>
+            </a>
+          </div>
+
+          <!-- Ikon & Butang Log Keluar -->
+          <button onclick="handleLogout()" class="px-3.5 py-2 bg-red-900/90 hover:bg-red-800 text-white font-black rounded-xl text-xs flex items-center space-x-1.5 border border-red-700 shadow transition transform active:scale-95" title="Log Keluar daripada Sistem">
+            <span class="text-base">🚪</span>
+            <span>Keluar</span>
+          </button>
+
+        </div>
+
+      </div>
+    </header>
+
+    <!-- ======================================================== -->
+    <!-- BAR NAVIGASI JABATAN (KEMAS, SELESA & TERATUR)           -->
+    <!-- ======================================================== -->
+    <nav class="bg-slate-900 border-b border-slate-800 shadow-md">
+      <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center space-x-2">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 hidden sm:inline">Pilihan Bahagian:</span>
+          
+          <button onclick="switchTab('enforcement')" id="btn-tab-enforcement" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 bg-amber-400 text-slate-950 shadow">
+            <span>🛡️</span>
+            <span>Jabatan Penguatkuasaan & Keselamatan</span>
+          </button>
+          
+          <button onclick="switchTab('it')" id="btn-tab-it" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 text-slate-300 hover:text-white hover:bg-slate-800">
+            <span>💻</span>
+            <span>Bahagian Teknologi Maklumat</span>
+          </button>
+          
+          <button onclick="switchTab('finance')" id="btn-tab-finance" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 text-slate-300 hover:text-white hover:bg-slate-800">
+            <span>📊</span>
+            <span>Laporan Kewangan & Rekonsiliasi</span>
+          </button>
+        </div>
+
+        <div class="text-[11px] text-slate-400 font-mono hidden md:inline">
+          Majlis Daerah Jelebu &bull; Sistem Pengurusan Berpusat
+        </div>
+      </div>
+    </nav>
+
+    <!-- ======================================================== -->
+    <!-- KANDUNGAN UTAMA MENGIKUT MODUL JABATAN                   -->
+    <!-- ======================================================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+      <!-- ===================================================================== -->
+      <!-- BAHAGIAN 1: JABATAN PENGUATKUASAAN & KESELAMATAN                      -->
+      <!-- ===================================================================== -->
+      <section id="panel-enforcement" class="tab-panel space-y-6 block fade-in">
+        
+        <!-- Tajuk & Subtajuk Bahagian -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-black text-slate-900">Jabatan Penguatkuasaan & Keselamatan</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Pengurusan rekod notis kompaun, semakan bukti 3 sudut foto, maklumat kenderaan dan penetapan kesalahan undang-undang kecil.</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="openAddUUKModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold rounded-xl text-xs shadow flex items-center space-x-1.5 transition">
+              <span>⚖️</span>
+              <span>+ Tambah Kesalahan UUK</span>
+            </button>
+            <button onclick="loadCompoundsTable()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs border border-slate-300 transition">
+              🔄 Muat Semula
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Kad Ringkasan Metrik Penguatkuasaan -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 block uppercase">Jumlah Notis Kompaun</span>
+              <span id="stat-total-compounds" class="text-2xl font-black text-slate-900 font-mono mt-0.5 block">18</span>
+              <span class="text-[10px] text-slate-400 block mt-0.5">Dikeluarkan Tahun Ini</span>
+            </div>
+            <div class="w-11 h-11 bg-red-50 text-red-700 rounded-2xl flex items-center justify-center text-xl font-bold">
+              📋
+            </div>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 block uppercase">Belum Dijelaskan</span>
+              <span id="stat-unpaid-compounds" class="text-2xl font-black text-red-600 font-mono mt-0.5 block">14</span>
+              <span class="text-[10px] text-red-500 font-semibold block mt-0.5">Tindakan Notis Peringatan</span>
+            </div>
+            <div class="w-11 h-11 bg-red-100 text-red-800 rounded-2xl flex items-center justify-center text-xl font-bold">
+              ⚠️
+            </div>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 block uppercase">Telah Dijelaskan</span>
+              <span id="stat-paid-compounds" class="text-2xl font-black text-emerald-600 font-mono mt-0.5 block">4</span>
+              <span class="text-[10px] text-emerald-600 font-semibold block mt-0.5">FPX & DuitNow QR</span>
+            </div>
+            <div class="w-11 h-11 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center text-xl font-bold">
+              ✓
+            </div>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 block uppercase">Pematuhan Bukti Foto</span>
+              <span class="text-2xl font-black text-blue-600 font-mono mt-0.5 block">100%</span>
+              <span class="text-[10px] text-blue-500 font-semibold block mt-0.5">3 Foto + Sijil Seksyen 90A</span>
+            </div>
+            <div class="w-11 h-11 bg-blue-50 text-blue-700 rounded-2xl flex items-center justify-center text-xl font-bold">
+              📸
+            </div>
+          </div>
+        </div>
+
+        <!-- Jadual Utama Senarai Notis Kompaun Semasa -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+          <div class="p-4 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-2">
+              <h3 class="font-bold text-sm text-slate-900">Senarai Notis Kompaun Berwarta & Butiran Kenderaan</h3>
+              <span class="text-[11px] bg-slate-200 text-slate-700 font-mono px-2 py-0.5 rounded-full font-bold" id="badge-compound-count">0 Rekod</span>
+            </div>
+
+            <!-- Penapis Carian & Status -->
+            <div class="flex items-center space-x-2">
+              <input type="text" id="compound-search-input" onkeyup="filterCompoundsTable()" placeholder="Cari No. Plat atau No. Notis..." class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-red-900 w-56">
+              <select id="compound-status-filter" onchange="filterCompoundsTable()" class="border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs bg-white font-medium">
+                <option value="ALL">Semua Status</option>
+                <option value="UNPAID">Belum Bayar (Unpaid)</option>
+                <option value="PAID_HITPAY">Telah Bayar (HitPay)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100/80 text-slate-600 font-bold border-b border-slate-200 uppercase text-[10px] tracking-wider">
+                  <th class="p-3">No. Notis & Tarikh</th>
+                  <th class="p-3">Maklumat Kenderaan</th>
+                  <th class="p-3">Lokasi / Petak</th>
+                  <th class="p-3">Kesalahan UUK</th>
+                  <th class="p-3 text-right">Nilai Kompaun</th>
+                  <th class="p-3 text-center">Bukti 3 Sudut Foto</th>
+                  <th class="p-3 text-center">Profil Penerima Saman</th>
+                  <th class="p-3 text-center">Status</th>
+                  <th class="p-3 text-center">Tindakan</th>
+                </tr>
+              </thead>
+              <tbody id="table-compounds-body" class="divide-y divide-slate-100">
+                <!-- Baris kompaun dimuat secara dinamik -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Jadual Rujukan Kesalahan Undang-Undang Kecil MDJ -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+          <div class="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
+            <div>
+              <h3 class="font-bold text-sm text-slate-900">Jadual Kesalahan Undang-Undang Kecil Tempat Letak Kereta MDJ</h3>
+              <p class="text-xs text-slate-500">Senarai kesalahan parkir berwarta berserta seksyen akta dan kadar kompaun statutori.</p>
+            </div>
+            <button onclick="openAddUUKModal()" class="px-3.5 py-1.5 bg-red-900 hover:bg-red-800 text-white font-bold rounded-xl text-xs shadow flex items-center space-x-1">
+              <span>+ Daftar Kesalahan Baharu</span>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100/80 text-slate-600 font-bold border-b border-slate-200 uppercase text-[10px]">
+                  <th class="p-3">Kod UUK</th>
+                  <th class="p-3">Keterangan Kesalahan</th>
+                  <th class="p-3">Akta / Enakmen Rujukan</th>
+                  <th class="p-3 text-right">Nilai Kompaun Asal</th>
+                  <th class="p-3 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody id="table-uuk-body" class="divide-y divide-slate-100">
+                <!-- Baris UUK dimuat secara dinamik -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- BAHAGIAN 2: BAHAGIAN TEKNOLOGI MAKLUMAT                               -->
+      <!-- ===================================================================== -->
+      <section id="panel-it" class="tab-panel space-y-6 hidden fade-in">
+        
+        <!-- Tajuk & Subtajuk Bahagian -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-black text-slate-900">Bahagian Teknologi Maklumat</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Pengurusan zon letak kereta, penetapan kadar tarif jam, pendaftaran kakitangan dan tetapan format resit kompaun.</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="openAddZoneModal()" class="px-4 py-2 bg-red-900 hover:bg-red-800 text-white font-bold rounded-xl text-xs shadow flex items-center space-x-1.5 transition">
+              <span>📍</span>
+              <span>+ Tambah Zon Kawasan</span>
+            </button>
+            <button onclick="openAddUserModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold rounded-xl text-xs shadow flex items-center space-x-1.5 transition">
+              <span>👤</span>
+              <span>+ Tambah Pegawai</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Grid 2 Kolum: Kawalan Diskaun & Tetapan Reka Bentuk Resit -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Modul Kawalan Kempen Diskaun Kompaun -->
+          <div class="lg:col-span-1 bg-amber-50/70 border border-amber-300 rounded-2xl p-5 shadow-sm space-y-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-2xl">🎟️</span>
+              <div>
+                <h3 class="font-bold text-amber-950 text-sm">Modul Kawalan Diskaun Kompaun</h3>
+                <span class="text-[10px] text-amber-800 font-semibold">Memerlukan Kelulusan Bertulis Ketua Jabatan</span>
+              </div>
+            </div>
+
+            <div class="bg-white border border-amber-200 rounded-xl p-3 text-xs text-amber-900 space-y-1">
+              <div class="flex justify-between items-center">
+                <span class="font-bold">Status Semasa:</span>
+                <span id="discount-status-pill" class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-100 text-red-800">
+                  TIDAK AKTIF (LOCKED)
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-600 mt-1">Mengikut polisi integriti MDJ, pengurangan nilai kompaun disekat secara lalai sehingga suis ini diaktifkan secara rasmi.</p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-3 text-xs space-y-2">
+              <div class="font-bold text-slate-800">Kadar Insentif Diskaun Berjadual:</div>
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-600">• 24 Jam Pertama:</span>
+                <span class="font-bold text-emerald-700">Diskaun 70% (Bayar RM9)</span>
+              </div>
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-600">• Hari ke-2 hingga 14:</span>
+                <span class="font-bold text-blue-700">Diskaun 50% (Bayar RM15)</span>
+              </div>
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-600">• Selepas 14 Hari:</span>
+                <span class="font-bold text-red-700">Kadar Penuh (RM30) + Mahkamah</span>
+              </div>
+            </div>
+
+            <button onclick="handleToggleDiscountCampaign()" id="btn-toggle-discount" class="w-full bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold py-2.5 rounded-xl text-xs shadow flex items-center justify-center space-x-2 transition">
+              <span>⚙️ Ubah Status Suis Diskaun</span>
+            </button>
+          </div>
+
+          <!-- Modul Tetapan Reka Bentuk Notis Kompaun & Saiz Resit -->
+          <div class="lg:col-span-2 bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b pb-3">
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm">Tetapan Reka Bentuk & Templat Notis Kompaun</h3>
+                <p class="text-xs text-slate-500">Konfigurasi saiz kertas haba (58mm / 80mm) dan amaran statutori pada tiket kompaun.</p>
+              </div>
+              <span class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2.5 py-1 rounded-full border border-blue-200 font-mono">
+                Standard ESC/POS
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              <!-- Borang Tetapan -->
+              <form onsubmit="handleSaveReceiptSettings(event)" class="space-y-3 text-xs">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Saiz Kertas Haba Pencetak</label>
+                  <div class="grid grid-cols-2 gap-2 text-center">
+                    <label class="border-2 border-red-900 bg-red-50 p-2 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer" id="label-setting-58">
+                      <input type="radio" name="setting_paper_size" value="58mm" checked onchange="updateLiveReceiptPreview('58mm')">
+                      <span class="font-bold text-red-950 text-xs">58mm (Poket)</span>
+                    </label>
+                    <label class="border border-slate-300 p-2 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer" id="label-setting-80">
+                      <input type="radio" name="setting_paper_size" value="80mm" onchange="updateLiveReceiptPreview('80mm')">
+                      <span class="font-bold text-slate-700 text-xs">80mm (Lebar)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Tajuk Rasmi Notis</label>
+                  <input type="text" id="setting-notice-title" value="NOTIS PEMBERITAHUAN KESALAHAN TEMPAT LETAK KERETA" class="w-full border border-slate-300 rounded-lg p-2 font-bold text-xs uppercase">
+                </div>
+
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Akta Statutori</label>
+                  <input type="text" id="setting-statutory-act" value="Di Bawah Perintah Tempat Letak Kereta (MDJ) 2026" class="w-full border border-slate-300 rounded-lg p-2 text-xs">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Tempoh Bayaran</label>
+                    <input type="number" id="setting-due-days" value="14" class="w-full border border-slate-300 rounded-lg p-2 font-bold text-xs">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">Telefon Kaunter</label>
+                    <input type="text" id="setting-phone" value="06-613 6233" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-mono">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Teks Amaran Statutori</label>
+                  <textarea id="setting-warning-text" rows="2" class="w-full border border-slate-300 rounded-lg p-2 text-xs">Sila jelaskan kompaun ini dalam tempoh 14 hari bagi mengelakkan tindakan mahkamah atau senarai hitam kenderaan.</textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-red-900 hover:bg-red-800 text-white font-bold py-2.5 rounded-xl shadow text-xs">
+                  💾 Simpan Tetapan Templat Resit
+                </button>
+              </form>
+
+              <!-- Pratonton Resit Langsung (Live Preview) -->
+              <div class="flex flex-col items-center justify-center p-3 bg-slate-50 border rounded-xl">
+                <div class="text-[10px] font-mono text-slate-500 mb-2 flex items-center justify-between w-full px-2">
+                  <span>PRATONTON RESIT LAPANGAN</span>
+                  <span id="preview-paper-badge" class="bg-slate-900 text-amber-300 px-2 py-0.5 rounded font-bold">58mm ESC/POS</span>
+                </div>
+
+                <div id="live-thermal-receipt" class="thermal-receipt p-3 rounded text-slate-900 text-xs shadow w-[250px] space-y-1.5">
+                  <div class="text-center">
+                    <div class="font-bold text-xs tracking-wider">MAJLIS DAERAH JELEBU</div>
+                    <div id="prev-title" class="text-[9px] font-bold">NOTIS PEMBERITAHUAN KESALAHAN</div>
+                    <div id="prev-act" class="text-[8px] text-slate-600">Perintah Tempat Letak Kereta MDJ 2026</div>
+                    <div class="border-b border-dashed border-slate-700 my-1.5"></div>
+                  </div>
+
+                  <div class="font-mono text-[10px] space-y-0.5">
+                    <div class="flex justify-between"><span>No Notis:</span><span class="font-bold">MDJ-K-2026-9921</span></div>
+                    <div class="flex justify-between"><span>Plat:</span><span class="font-bold text-sm">WYY 4091</span></div>
+                    <div class="flex justify-between"><span>Model:</span><span>Toyota Vios (Perak)</span></div>
+                    <div class="flex justify-between"><span>Zon:</span><span>Zon A (Petak 14)</span></div>
+                    <div class="flex justify-between"><span>Kesalahan:</span><span class="font-bold text-red-700">UUK 5: Tiada Bayaran</span></div>
+                  </div>
+
+                  <div class="border-b border-dashed border-slate-700 my-1.5"></div>
+
+                  <div class="flex justify-between items-center text-xs font-bold">
+                    <span>JUMLAH:</span>
+                    <span class="text-sm font-mono font-black">RM 30.00</span>
+                  </div>
+
+                  <div class="my-1.5 p-1 bg-white border border-dashed rounded text-center">
+                    <div class="text-[8px] font-bold text-slate-700 uppercase">IMBAS UNTUK BAYAR SEGERA</div>
+                    <div class="w-16 h-16 bg-slate-900 mx-auto my-1 flex items-center justify-center text-white text-[9px] font-mono">
+                      [ DuitNow QR ]
+                    </div>
+                  </div>
+
+                  <div id="prev-warning" class="text-[7.5px] text-center text-slate-600 leading-tight">
+                    Sila jelaskan kompaun ini dalam tempoh 14 hari bagi mengelakkan tindakan mahkamah.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Jadual Pengurusan Zon & Kadar Jam (Auto-Sync) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+          <div class="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
+            <div>
+              <h3 class="font-bold text-sm text-slate-900">Senarai Zon Letak Kereta, Kadar Tarif Jam & GPS Berwarta MDJ</h3>
+              <p class="text-xs text-slate-500">Zon baharu yang ditambah akan dikemaskini secara automatik (Auto-Sync) ke App Pemandu dan Penguatkuasa.</p>
+            </div>
+            <button onclick="openAddZoneModal()" class="px-3.5 py-1.5 bg-red-900 hover:bg-red-800 text-white font-bold rounded-xl text-xs shadow flex items-center space-x-1">
+              <span>+ Tambah Kawasan</span>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100/80 text-slate-600 font-bold border-b border-slate-200 uppercase text-[10px]">
+                  <th class="p-3">Kod Zon</th>
+                  <th class="p-3">Nama Kawasan & Jalan</th>
+                  <th class="p-3 text-right">Kadar Sejam</th>
+                  <th class="p-3 text-right">Pas Bulanan</th>
+                  <th class="p-3 text-center">Jumlah Petak</th>
+                  <th class="p-3">Koordinat GPS Geotag</th>
+                  <th class="p-3">Waktu Beroperasi</th>
+                  <th class="p-3 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody id="table-zones-body" class="divide-y divide-slate-100">
+                <!-- Baris zon dimuat secara dinamik -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Jadual Pengurusan Kakitangan & Akses Staf -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+          <div class="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
+            <div>
+              <h3 class="font-bold text-sm text-slate-900">Senarai Kakitangan & Pengguna Sistem (Akses Berpusat)</h3>
+              <p class="text-xs text-slate-500">Akaun kakitangan MDJ yang dibenarkan mengakses sistem dan operasi lapangan.</p>
+            </div>
+            <button onclick="openAddUserModal()" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold rounded-xl text-xs shadow flex items-center space-x-1">
+              <span>+ Daftar Pegawai Baharu</span>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100/80 text-slate-600 font-bold border-b border-slate-200 uppercase text-[10px]">
+                  <th class="p-3">Nama Penuh Pegawai</th>
+                  <th class="p-3">No. Kad Kuasa / Staf</th>
+                  <th class="p-3">Emel Rasmi MDJ</th>
+                  <th class="p-3">Bahagian / Jabatan</th>
+                  <th class="p-3">Peranan Akses</th>
+                  <th class="p-3 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody id="table-users-body" class="divide-y divide-slate-100">
+                <!-- Baris pengguna dimuat secara dinamik -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- BAHAGIAN 3: LAPORAN KEWANGAN & PENJANAAN MENGIKUT BULAN/TAHUN/PEGAWAI  -->
+      <!-- ===================================================================== -->
+      <section id="panel-finance" class="tab-panel space-y-6 hidden fade-in">
+        
+        <!-- =================================================================== -->
+        <!-- MODUL LAPORAN HASIL KEWANGAN (SATU BARIS BERSAMA BUTANG TINDAKAN)   -->
+        <!-- =================================================================== -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-5">
+          
+          <!-- Baris Utama (Sama Baris): Tajuk di Kiri & Butang-butang Tindakan di Kanan -->
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-red-900 to-amber-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                📊
+              </div>
+              <div>
+                <h2 class="text-base font-black text-slate-900 uppercase tracking-wide">Laporan Hasil Kewangan</h2>
+                <p class="text-xs text-slate-500">Pecahan kutipan hasil tempat letak kereta dan kompaun Majlis Daerah Jelebu</p>
+              </div>
+            </div>
+
+            <!-- Butang Tindakan (Sama Baris dengan Tajuk): Semak Laporan, Cetak, PDF, Muat Turun Excel -->
+            <div class="flex flex-wrap items-center gap-2">
+              <!-- Butang 1: Semak Laporan (Paling Menonjol) -->
+              <button id="btn-semak-laporan" onclick="handleSemakLaporan()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs shadow flex items-center space-x-1.5 transition cursor-pointer">
+                <span class="text-sm">🔍</span>
+                <span id="btn-semak-text">Semak Laporan</span>
+              </button>
+
+              <!-- Butang 2: Cetak Rasmi -->
+              <button onclick="exportFinanceReport('print')" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 active:scale-95 text-white font-bold rounded-xl text-xs shadow flex items-center space-x-1.5 transition cursor-pointer" title="Cetak penyata kewangan rasmi ke mesin pencetak">
+                <span>🖨️</span>
+                <span>Cetak</span>
+              </button>
+
+              <!-- Butang 3: Muat Turun PDF -->
+              <button onclick="exportFinanceReport('pdf')" class="px-3.5 py-2 bg-red-900 hover:bg-red-800 active:scale-95 text-white font-bold rounded-xl text-xs shadow flex items-center space-x-1.5 transition cursor-pointer" title="Simpan sebagai fail dokumen PDF rasmi MDJ">
+                <span>📄</span>
+                <span>PDF</span>
+              </button>
+
+              <!-- Butang 4: Muat Turun Excel / CSV -->
+              <button onclick="downloadFinanceCSV()" class="px-3.5 py-2 bg-teal-800 hover:bg-teal-700 active:scale-95 text-white font-bold rounded-xl text-xs shadow flex items-center space-x-1.5 transition cursor-pointer" title="Muat turun data ke fail Excel / CSV (UTF-8)">
+                <span>📥</span>
+                <span>Muat Turun Excel</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Barisan Kolum Pilihan Penapis (Tahun, Bulan, Pegawai, Kategori) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
+            
+            <!-- 1. Pilihan Tahun -->
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                <span>Tahun Laporan</span>
+                <span class="text-[10px] text-slate-400 font-normal">Pilih tahun</span>
+              </label>
+              <select id="fin-filter-year" onchange="applyFinanceFilters()" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 font-bold focus:border-red-900 focus:outline-none focus:bg-white transition">
+                <option value="ALL">Semua Tahun</option>
+                <option value="2026" selected>2026 (Tahun Semasa)</option>
+                <option value="2025">2025</option>
+              </select>
+            </div>
+
+            <!-- 2. Pilihan Bulan -->
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                <span>Bulan</span>
+                <span class="text-[10px] text-slate-400 font-normal">Pilih bulan</span>
+              </label>
+              <select id="fin-filter-month" onchange="applyFinanceFilters()" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 font-bold focus:border-red-900 focus:outline-none focus:bg-white transition">
+                <option value="ALL">Semua Bulan (Sepanjang Tahun)</option>
+                <option value="Januari">Januari</option>
+                <option value="Februari">Februari</option>
+                <option value="Mac">Mac</option>
+                <option value="April">April</option>
+                <option value="Mei">Mei</option>
+                <option value="Jun">Jun</option>
+                <option value="Julai">Julai</option>
+                <option value="Ogos">Ogos</option>
+                <option value="September">September</option>
+                <option value="Oktober">Oktober</option>
+                <option value="November" selected>November</option>
+                <option value="Disember">Disember</option>
+              </select>
+            </div>
+
+            <!-- 3. Pilihan Pegawai Penguatkuasa -->
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                <span>Nama Pegawai Penguatkuasa</span>
+                <span class="text-[10px] text-slate-400 font-normal">Pilih pegawai</span>
+              </label>
+              <select id="fin-filter-officer" onchange="applyFinanceFilters()" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 font-bold focus:border-red-900 focus:outline-none focus:bg-white transition">
+                <option value="ALL">Semua Pegawai Lapangan</option>
+                <option value="Zulkifli">Sjn. Zulkifli bin Ismail (KOP-104)</option>
+                <option value="Farhan">Kpl. Mohd Farhan bin Daud (KOP-108)</option>
+                <option value="Siti Hajar">L/Kpl. Siti Hajar binti Ramli (KOP-112)</option>
+                <option value="Rosli">Insp. Rosli bin Daud (KOP-001)</option>
+              </select>
+            </div>
+
+            <!-- 4. Pilihan Kategori Hasil -->
+            <div>
+              <label class="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                <span>Kategori Hasil</span>
+                <span class="text-[10px] text-slate-400 font-normal">Pilih kutipan</span>
+              </label>
+              <select id="fin-filter-category" onchange="applyFinanceFilters()" class="w-full border border-slate-300 rounded-xl p-2.5 bg-slate-50 font-bold focus:border-red-900 focus:outline-none focus:bg-white transition">
+                <option value="ALL">Semua Hasil (Parkir & Kompaun)</option>
+                <option value="PARKING_ONLY">Hasil Sesi Parkir Sahaja</option>
+                <option value="COMPOUND_ONLY">Hasil Bayaran Kompaun Sahaja</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Baris Status Ringkasan & Tindakan Set Semula -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-1 border-t border-slate-100 text-[11px] text-slate-500">
+            <div class="flex items-center space-x-2">
+              <span id="fin-status-pill" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                ✓ Sedia Untuk Semakan
+              </span>
+              <span id="fin-filter-summary">Memaparkan laporan bagi: <strong>Tahun [2026] &bull; Bulan [November] &bull; Pegawai [Semua] &bull; Kategori [Semua Hasil]</strong></span>
+            </div>
+            <button onclick="resetFinanceFilters()" class="text-red-900 hover:text-red-700 font-bold underline cursor-pointer">
+              Set Semula Penapis
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Kad Ringkasan Metrik Kewangan Dinamik (Hasil Pengiraan Mengikut Penapis) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-5 rounded-2xl shadow-sm border border-emerald-700">
+            <span class="text-xs font-bold text-emerald-300 block uppercase">Jumlah Keseluruhan Hasil</span>
+            <span id="fin-kpi-total" class="text-3xl font-black text-white font-mono mt-1 block">RM 5,040.00</span>
+            <span class="text-[10px] text-emerald-300/80 block mt-1">Berdasarkan penapis semasa</span>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+            <span class="text-xs font-bold text-slate-500 block uppercase">Hasil Sesi Parkir</span>
+            <span id="fin-kpi-parking" class="text-3xl font-black text-slate-900 font-mono mt-1 block">RM 3,840.00</span>
+            <span class="text-[10px] text-slate-400 block mt-1">Caj Setiap Jam & Pas</span>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+            <span class="text-xs font-bold text-slate-500 block uppercase">Hasil Bayaran Kompaun</span>
+            <span id="fin-kpi-compound" class="text-3xl font-black text-red-700 font-mono mt-1 block">RM 1,200.00</span>
+            <span class="text-[10px] text-slate-400 block mt-1">Saman Dijelaskan</span>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+            <span class="text-xs font-bold text-slate-500 block uppercase">Bilangan Transaksi</span>
+            <span id="fin-kpi-count" class="text-3xl font-black text-blue-600 font-mono mt-1 block">640</span>
+            <span class="text-[10px] text-emerald-600 font-semibold block mt-1">Kutipan Berjaya</span>
+          </div>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- JADUAL LAPORAN HASIL TERPERINCI MENGIKUT BULAN / TAHUN / PEGAWAI    -->
+        <!-- =================================================================== -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+          <div class="p-4 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-sm text-slate-900">Jadual Laporan Pecahan Hasil Parkir & Kompaun Mengikut Pegawai</h3>
+              <p class="text-xs text-slate-500">Hasil kutipan bulanan dan tahunan bagi setiap zon rondaan penguatkuasa.</p>
+            </div>
+            <span class="text-xs font-mono font-bold px-3 py-1 bg-slate-200 text-slate-800 rounded-full" id="fin-row-count-badge">
+              4 Rekod
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100/80 text-slate-600 font-bold border-b border-slate-200 uppercase text-[10px] tracking-wider">
+                  <th class="p-3">Tahun & Bulan</th>
+                  <th class="p-3">Nama Pegawai Penguatkuasa</th>
+                  <th class="p-3">Zon Rondaan</th>
+                  <th class="p-3 text-center">Bil. Transaksi</th>
+                  <th class="p-3 text-right">Hasil Parkir (RM)</th>
+                  <th class="p-3 text-right">Hasil Kompaun (RM)</th>
+                  <th class="p-3 text-right">Jumlah Bersih (RM)</th>
+                  <th class="p-3 text-center">Status Bank</th>
+                </tr>
+              </thead>
+              <tbody id="table-finance-report-body" class="divide-y divide-slate-100 font-mono">
+                <!-- Baris rekod kewangan dimuat secara dinamik -->
+              </tbody>
+              <!-- Baris Jumlah Keseluruhan (Total Summary Row) -->
+              <tfoot class="bg-slate-900 text-white font-mono font-bold text-xs">
+                <tr>
+                  <td class="p-3 uppercase font-sans font-black" colspan="3">JUMLAH KESELURUHAN (BERDASARKAN PENAPIS)</td>
+                  <td class="p-3 text-center" id="foot-total-tx">640</td>
+                  <td class="p-3 text-right text-emerald-300 font-black" id="foot-total-parking">RM 3,840.00</td>
+                  <td class="p-3 text-right text-red-300 font-black" id="foot-total-compound">RM 1,200.00</td>
+                  <td class="p-3 text-right text-amber-300 font-black text-sm" id="foot-total-net">RM 5,040.00</td>
+                  <td class="p-3 text-center text-[10px] text-emerald-400 font-sans">SETTLED (MDJ)</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- Penyata Rekonsiliasi Kutipan Digital Rasmi -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+          <div class="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
+            <div>
+              <h3 class="font-bold text-sm text-slate-900">Penyata Rekonsiliasi Kutipan Digital</h3>
+              <p class="text-xs text-slate-500">Penyata audit dana masuk ke akaun bank berkanun Majlis Daerah Jelebu setiap hari bekerja (T+1).</p>
+            </div>
+            <span class="text-xs font-bold font-mono px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-300">
+              Penyelesaian Penuh (Settled)
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100/80 text-slate-600 font-bold border-b border-slate-200 uppercase text-[10px]">
+                  <th class="p-3">ID Transaksi</th>
+                  <th class="p-3">Tarikh Pindahan</th>
+                  <th class="p-3 text-center">Jumlah Transaksi</th>
+                  <th class="p-3 text-right">Kutipan Parkir</th>
+                  <th class="p-3 text-right">Kutipan Kompaun</th>
+                  <th class="p-3 text-right">Caj Transaksi</th>
+                  <th class="p-3 text-right">Jumlah Bersih ke MDJ</th>
+                  <th class="p-3 text-center">Status Bank</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 font-mono">
+                <tr>
+                  <td class="p-3 font-bold text-slate-900">STL-EZP-88219</td>
+                  <td class="p-3 text-slate-600 font-sans">10/11/2026</td>
+                  <td class="p-3 text-center">640</td>
+                  <td class="p-3 text-right text-slate-700">RM 3,840.00</td>
+                  <td class="p-3 text-right text-red-700 font-bold">RM 1,200.00</td>
+                  <td class="p-3 text-right text-slate-500">RM 50.40</td>
+                  <td class="p-3 text-right text-emerald-700 font-black text-sm">RM 4,989.60</td>
+                  <td class="p-3 text-center"><span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full text-[10px]">SETTLED (MDJ BANK)</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: SEMAKAN 3 FOTO BUKTI STATUTORI (SEKSYEN 90A AKTA KETERANGAN)       -->
+  <!-- ========================================================================= -->
+  <div id="evidence-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-200">
+      
+      <div class="bg-slate-900 text-white p-4 flex items-center justify-between border-b-2 border-amber-400">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">📸</span>
+          <div>
+            <h3 class="font-bold text-sm text-amber-300">Pemeriksaan 3 Sudut Foto Bukti Kesalahan</h3>
+            <p class="text-[11px] text-slate-400">Sijil Perakuan Bukti Elektronik Di Bawah Seksyen 90A Akta Keterangan 1950</p>
+          </div>
+        </div>
+        <button onclick="closeEvidenceModal()" class="text-white hover:text-amber-300 font-bold text-lg">✕</button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs">
+        <div class="bg-slate-50 border rounded-2xl p-3 flex justify-between items-center font-mono">
+          <div>
+            <span class="text-[10px] text-slate-500 block">NO. NOTIS KOMPAUN:</span>
+            <span id="modal-ev-notice" class="font-bold text-sm text-red-900">MDJ-K-2026-9921</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-500 block">NO. PLAT & KENDERAAN:</span>
+            <span id="modal-ev-plate" class="font-black text-sm text-slate-900">WYY 4091 (Toyota Vios)</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-500 block">LOKASI & PETAK:</span>
+            <span class="font-bold text-slate-800">Petak 14, Pekan Kuala Klawang</span>
+          </div>
+        </div>
+
+        <!-- Grid 3 Foto Bukti Rasmi -->
+        <div class="grid grid-cols-3 gap-3">
+          
+          <!-- Foto 1: Hadapan & Plat -->
+          <div class="border border-slate-300 rounded-2xl overflow-hidden bg-slate-900 flex flex-col">
+            <div class="h-36 bg-slate-800 flex flex-col items-center justify-center relative p-2 text-center">
+              <span class="text-3xl mb-1">🚘</span>
+              <span class="text-[10px] text-slate-300 font-mono font-bold">[ FOTO PLAT DEPAN ]</span>
+              <span class="absolute bottom-1 right-2 text-[8px] bg-black/70 text-emerald-400 px-1.5 py-0.5 rounded font-mono">GPS: 2.9388, 102.0712</span>
+            </div>
+            <div class="p-2 bg-slate-100 text-[10px] font-bold text-center border-t">
+              1. Plat Nombor Hadapan
+            </div>
+          </div>
+
+          <!-- Foto 2: Cermin Hadapan (Tanpa Tiket) -->
+          <div class="border border-slate-300 rounded-2xl overflow-hidden bg-slate-900 flex flex-col">
+            <div class="h-36 bg-slate-800 flex flex-col items-center justify-center relative p-2 text-center">
+              <span class="text-3xl mb-1">🪟</span>
+              <span class="text-[10px] text-slate-300 font-mono font-bold">[ FOTO CERMIN DEPAN ]</span>
+              <span class="absolute bottom-1 right-2 text-[8px] bg-black/70 text-emerald-400 px-1.5 py-0.5 rounded font-mono">Tiada Pas Aktif</span>
+            </div>
+            <div class="p-2 bg-slate-100 text-[10px] font-bold text-center border-t">
+              2. Cermin Hadapan Kenderaan
+            </div>
+          </div>
+
+          <!-- Foto 3: Belakang Kereta & Nombor Petak Parkir (Permintaan Khas MDJ) -->
+          <div class="border-2 border-amber-500 rounded-2xl overflow-hidden bg-amber-950/20 flex flex-col">
+            <div class="h-36 bg-slate-800 flex flex-col items-center justify-center relative p-2 text-center">
+              <span class="text-3xl mb-1">🚗</span>
+              <span class="text-[10px] text-amber-300 font-mono font-bold">[ BELAKANG & PETAK NO. 14 ]</span>
+              <span class="absolute bottom-1 right-2 text-[8px] bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded font-bold font-mono">PETAK BERBAYAR</span>
+            </div>
+            <div class="p-2 bg-amber-100 text-[10px] font-bold text-center text-amber-950 border-t border-amber-300">
+              3. Belakang Kereta & Petak
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Perakuan Sijil Hash Kriptografi Seksyen 90A -->
+        <div class="p-3 bg-slate-900 text-slate-300 rounded-2xl space-y-1 font-mono text-[10px] border border-slate-800">
+          <div class="flex justify-between text-amber-400 font-bold">
+            <span>PERAKUAN DIGITAL SEKSYEN 90A AKTA KETERANGAN 1950:</span>
+            <span>SAH DI MAHKAMAH</span>
+          </div>
+          <div>SHA-256 Hash: <span id="modal-ev-hash" class="text-emerald-400 break-all">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span></div>
+          <div class="text-slate-400">Pegawai Perakam: KOP-104 (Zulkifli bin Ismail) | Waktu Geotag: 11/11/2026 14:38:22 MYT</div>
+        </div>
+
+        <div class="flex justify-end pt-2 border-t">
+          <button onclick="closeEvidenceModal()" class="px-5 py-2 bg-slate-900 text-white font-bold rounded-xl text-xs">
+            Tutup Pemeriksaan
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: LENGKAPKAN MAKLUMAT PENERIMA SAMAN (UNTUK POS BERDAFTAR)           -->
+  <!-- ========================================================================= -->
+  <div id="offender-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
+      
+      <div class="bg-gradient-to-r from-red-950 to-slate-900 text-white p-4 flex items-center justify-between border-b-2 border-amber-400">
+        <div class="flex items-center space-x-2">
+          <img src="logo_mdj.jpg" alt="Logo" class="h-8 w-auto">
+          <div>
+            <h3 class="font-bold text-sm">Lengkapkan Maklumat Penerima Kompaun</h3>
+            <p class="text-[11px] text-amber-200">Jabatan Penguatkuasaan & Keselamatan MDJ</p>
+          </div>
+        </div>
+        <button onclick="closeOffenderModal()" class="text-white hover:text-amber-300 font-bold">✕</button>
+      </div>
+
+      <form onsubmit="handleSaveOffenderProfile(event)" class="p-5 space-y-3.5 text-xs text-slate-700">
+        <div class="bg-slate-50 border rounded-xl p-3 flex justify-between items-center font-mono">
+          <div>
+            <span class="text-[10px] text-slate-500 font-semibold block">No. Notis Saman:</span>
+            <div id="modal-offender-notice" class="font-bold text-sm text-red-950">MDJ-K-2026-9921</div>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-500 font-semibold block">No. Plat Kenderaan:</span>
+            <div id="modal-offender-plate" class="font-black text-sm text-slate-900 bg-white px-2 py-0.5 rounded border">WYY 4091</div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1">Sumber Maklumat Penerima</label>
+          <select id="offender-source" class="w-full border rounded-xl p-2.5 bg-white font-medium">
+            <option value="COUNTER_PRESENCE">1. Hadir Sendiri di Kaunter Bayaran MDJ</option>
+            <option value="JPJ_DATABASE">2. Semakan Data Pendaftaran Kenderaan JPJ</option>
+            <option value="ONLINE_APPEAL">3. Melalui Borang Permohonan Rayuan Saman Online</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1">Nama Penuh Penerima / Pemilik Kenderaan <span class="text-red-600">*</span></label>
+          <input type="text" id="offender-fullname" required placeholder="Contoh: AHMAD SYAFIQ BIN MOHD RAZALI" class="w-full border rounded-xl p-2.5 font-bold uppercase">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold mb-1">No. Kad Pengenalan (MyKad) <span class="text-red-600">*</span></label>
+            <input type="text" id="offender-ic" required placeholder="890315-05-5129" class="w-full border rounded-xl p-2.5 font-mono font-bold">
+          </div>
+          <div>
+            <label class="block font-bold mb-1">No. Telefon / WhatsApp <span class="text-red-600">*</span></label>
+            <input type="text" id="offender-phone" required placeholder="017-3382910" class="w-full border rounded-xl p-2.5 font-mono font-bold">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1">Alamat Penuh Surat-Menyurat <span class="text-red-600">*</span></label>
+          <textarea id="offender-address" required rows="2" class="w-full border rounded-xl p-2.5 font-medium" placeholder="No. Rumah, Jalan, Poskod, Kawasan..."></textarea>
+          <span class="text-[10px] text-slate-500">Alamat ini digunakan untuk cetakan Surat Notis Peringatan Pos Berdaftar.</span>
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2 border-t">
+          <button type="button" onclick="closeOffenderModal()" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-bold">Batal</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-red-900 hover:bg-red-800 text-white font-bold shadow">
+            💾 Simpan Maklumat Penerima
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: DAFTAR KESALAHAN UUK BAHARU MDJ                                    -->
+  <!-- ========================================================================= -->
+  <div id="uuk-add-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
+      
+      <div class="bg-gradient-to-r from-red-950 to-slate-900 text-white p-4 flex items-center justify-between border-b-2 border-amber-400">
+        <h3 class="font-bold text-sm text-amber-300">Daftar Kesalahan Baharu Undang-Undang Kecil MDJ</h3>
+        <button onclick="closeAddUUKModal()" class="text-white hover:text-amber-300 font-bold">✕</button>
+      </div>
+
+      <form onsubmit="handleSaveNewUUK(event)" class="p-5 space-y-3.5 text-xs text-slate-700">
+        <div>
+          <label class="block font-bold mb-1">Kod Kesalahan / Seksyen UUK <span class="text-red-600">*</span></label>
+          <input type="text" id="new-uuk-code" required placeholder="Contoh: UUK 18 / SEKSYEN 4" class="w-full border rounded-xl p-2.5 font-mono uppercase font-bold">
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1">Tajuk / Keterangan Kesalahan <span class="text-red-600">*</span></label>
+          <textarea id="new-uuk-title" required rows="2" placeholder="Contoh: Meletak kenderaan berat melebihi had muatan di kawasan perniagaan..." class="w-full border rounded-xl p-2.5 font-medium"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold mb-1">Nilai Kompaun (RM) <span class="text-red-600">*</span></label>
+            <input type="number" step="5" id="new-uuk-amount" required value="50.00" class="w-full border rounded-xl p-2.5 font-mono font-black text-sm">
+          </div>
+          <div>
+            <label class="block font-bold mb-1">Akta / Enakmen Rujukan</label>
+            <input type="text" id="new-uuk-act" value="Perintah Tempat Letak Kereta (MDJ) 2026" class="w-full border rounded-xl p-2.5 font-medium">
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2 border-t">
+          <button type="button" onclick="closeAddUUKModal()" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-bold">Batal</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-red-900 hover:bg-red-800 text-white font-bold shadow">
+            Simpan Kesalahan Berwarta
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: DAFTAR ZON / KAWASAN PARKING BAHARU                                -->
+  <!-- ========================================================================= -->
+  <div id="zone-add-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
+      
+      <div class="bg-gradient-to-r from-red-950 to-slate-900 text-white p-4 flex items-center justify-between border-b-2 border-amber-400">
+        <h3 class="font-bold text-sm text-amber-300">Pendaftaran Zon Parking & Tarif Jam Baharu MDJ</h3>
+        <button onclick="closeAddZoneModal()" class="text-white hover:text-amber-300 font-bold">✕</button>
+      </div>
+
+      <form onsubmit="handleSaveNewZone(event)" class="p-5 space-y-3.5 text-xs text-slate-700">
+        <div>
+          <label class="block font-bold mb-1">Kod Zon / Kawasan <span class="text-red-600">*</span></label>
+          <input type="text" id="new-zone-code" required placeholder="Contoh: ZON_D" class="w-full border rounded-xl p-2.5 font-mono uppercase font-bold">
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1">Nama Kawasan & Jalan Berwarta <span class="text-red-600">*</span></label>
+          <input type="text" id="new-zone-name" required placeholder="Contoh: Zon D - Pekan Chennah & Kenaboi" class="w-full border rounded-xl p-2.5 font-bold">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold mb-1">Kadar Sejam (RM) <span class="text-red-600">*</span></label>
+            <input type="number" step="0.10" id="new-zone-rate" required value="0.50" class="w-full border rounded-xl p-2.5 font-mono font-bold">
+          </div>
+          <div>
+            <label class="block font-bold mb-1">Pas Bulanan (RM)</label>
+            <input type="number" step="5" id="new-zone-monthly" value="50.00" class="w-full border rounded-xl p-2.5 font-mono font-bold">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold mb-1">Jumlah Petak Berturap</label>
+            <input type="number" id="new-zone-bays" value="150" class="w-full border rounded-xl p-2.5 font-mono font-bold">
+          </div>
+          <div>
+            <label class="block font-bold mb-1">Waktu Operasi</label>
+            <input type="text" id="new-zone-hours" value="08:00 AM - 05:00 PM (Isnin - Jumaat)" class="w-full border rounded-xl p-2.5">
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2 border-t">
+          <button type="button" onclick="closeAddZoneModal()" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-bold">Batal</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-red-900 hover:bg-red-800 text-white font-bold shadow">
+            Simpan Zon Baharu (Auto-Sync)
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: DAFTAR PEGAWAI / PENGGUNA SISTEM BAHARU                             -->
+  <!-- ========================================================================= -->
+  <div id="user-add-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
+      
+      <div class="bg-gradient-to-r from-red-950 to-slate-900 text-white p-4 flex items-center justify-between border-b-2 border-amber-400">
+        <h3 class="font-bold text-sm text-amber-300">Pendaftaran Pegawai / Pengguna Sistem Baharu</h3>
+        <button onclick="closeAddUserModal()" class="text-white hover:text-amber-300 font-bold">✕</button>
+      </div>
+
+      <form onsubmit="handleSaveNewUser(event)" class="p-5 space-y-3.5 text-xs text-slate-700">
+        <div>
+          <label class="block font-bold mb-1">Nama Penuh Pegawai <span class="text-red-600">*</span></label>
+          <input type="text" id="new-user-fullname" required placeholder="Contoh: Kpl. Mohd Farhan bin Daud" class="w-full border rounded-xl p-2.5 font-bold uppercase">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold mb-1">Emel Rasmi MDJ <span class="text-red-600">*</span></label>
+            <input type="email" id="new-user-email" required placeholder="farhan.op@mdj.gov.my" class="w-full border rounded-xl p-2.5 font-mono">
+          </div>
+          <div>
+            <label class="block font-bold mb-1">No. Telefon</label>
+            <input type="text" id="new-user-phone" placeholder="013-4491022" class="w-full border rounded-xl p-2.5 font-mono">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold mb-1">Peranan Akses <span class="text-red-600">*</span></label>
+            <select id="new-user-role" class="w-full border rounded-xl p-2.5 bg-white font-bold">
+              <option value="ENFORCEMENT_OFFICER">Pegawai Penguatkuasa Lapangan</option>
+              <option value="ENFORCEMENT_CLERK">Kerani Saman / Penguatkuasaan</option>
+              <option value="FINANCE_OFFICER">Pegawai Kewangan & Akaun</option>
+              <option value="IT_OFFICER">Pegawai Teknologi Maklumat</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold mb-1">No. Kad Kuasa / Staf</label>
+            <input type="text" id="new-user-badge" placeholder="Contoh: KOP-108" class="w-full border rounded-xl p-2.5 font-mono uppercase font-bold">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1">Bahagian / Jabatan</label>
+          <input type="text" id="new-user-dept" value="Jabatan Penguatkuasaan & Keselamatan" class="w-full border rounded-xl p-2.5">
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2 border-t">
+          <button type="button" onclick="closeAddUserModal()" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-bold">Batal</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-red-900 hover:bg-red-800 text-white font-bold shadow">
+            Daftar Pegawai
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIK SISTEM DASHBOARD, SESI & LAPORAN KEWANGAN                -->
+  <!-- ========================================================================= -->
+  <script>
+    // 1. Pengurusan Log Masuk & Sesi Pengguna
+    let activeUser = null;
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const username = document.getElementById('input-login-username').value.trim();
+      const password = document.getElementById('input-login-password').value;
+
+      try {
+        const res = await fetch('/api/v1/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          activeUser = data.user;
+          sessionStorage.setItem('ezpark_admin_user', JSON.stringify(activeUser));
+          applyUserSession(activeUser);
+          showDashboardView();
+        } else {
+          alert("Kelayakan log masuk tidak sah.");
+        }
+      } catch (err) {
+        alert("Ralat komunikasi dengan pelayan: " + err.message);
+      }
+    }
+
+    function applyUserSession(user) {
+      document.getElementById('nav-officer-name').innerText = user.full_name;
+      document.getElementById('nav-officer-dept').innerText = user.department || 'Majlis Daerah Jelebu';
+
+      // Auto-switch mengikut peranan jabatan
+      if (user.email.includes('ict') || user.role === 'SUPERADMIN_ICT' || user.role === 'IT_OFFICER') {
+        switchTab('it');
+      } else if (user.email.includes('kew') || user.role === 'FINANCE_OFFICER') {
+        switchTab('finance');
+      } else {
+        switchTab('enforcement');
+      }
+    }
+
+    function handleLogout() {
+      if (confirm("Adakah anda pasti untuk log keluar daripada sistem?")) {
+        sessionStorage.removeItem('ezpark_admin_user');
+        activeUser = null;
+        showLoginView();
+      }
+    }
+
+    function showLoginView() {
+      document.getElementById('view-login').classList.remove('hidden');
+      document.getElementById('view-dashboard').classList.add('hidden');
+    }
+
+    function showDashboardView() {
+      document.getElementById('view-login').classList.add('hidden');
+      document.getElementById('view-dashboard').classList.remove('hidden');
+      loadCompoundsTable();
+    }
+
+    // 2. Tarikh & Waktu Masa Nyata Malaysia (Besar & Ditonjolkan)
+    function updateLiveClock() {
+      const now = new Date();
+      
+      // Masa format 24 jam HH:mm:ss
+      const timeStr = now.toLocaleTimeString('ms-MY', { hour12: false });
+      const clockTimeEl = document.getElementById('live-clock-time');
+      if (clockTimeEl) clockTimeEl.innerText = timeStr;
+
+      // Tarikh penuh Bahasa Melayu: cth: Rabu, 11 November 2026
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const dateStr = now.toLocaleDateString('ms-MY', options);
+      const clockDateEl = document.getElementById('live-clock-date');
+      if (clockDateEl) clockDateEl.innerText = dateStr;
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    // 3. Kawalan Navigasi Tab Jabatan (Di Sub-Nav Bar)
+    let currentTab = 'enforcement';
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.className = "tab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 text-slate-300 hover:text-white hover:bg-slate-800";
+      });
+
+      const panel = document.getElementById('panel-' + tabId);
+      if (panel) panel.classList.remove('hidden');
+
+      const activeBtn = document.getElementById('btn-tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.className = "tab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 bg-amber-400 text-slate-950 shadow";
+      }
+
+      if (tabId === 'enforcement') loadCompoundsTable();
+      if (tabId === 'it') { loadZonesTable(); loadUsersTable(); }
+      if (tabId === 'finance') { initFinanceReporting(); }
+    }
+
+    // 4. Modul Jabatan Penguatkuasaan & Keselamatan
+    let cachedCompounds = [];
+
+    async function loadCompoundsTable() {
+      try {
+        const res = await fetch('/api/v1/compounds');
+        const list = await res.json();
+        cachedCompounds = list;
+        renderCompoundsTable(list);
+        loadUUKTable();
+      } catch (err) {
+        console.error("Gagal muat kompaun:", err);
+      }
+    }
+
+    function renderCompoundsTable(list) {
+      const tbody = document.getElementById('table-compounds-body');
+      tbody.innerHTML = '';
+      document.getElementById('badge-compound-count').innerText = `${list.length} Rekod`;
+
+      let unpaid = 0;
+      let paid = 0;
+
+      list.forEach(c => {
+        const isPaid = c.status === 'PAID_HITPAY';
+        if (isPaid) paid++; else unpaid++;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+        const hasOffender = c.offender_profile && c.offender_profile.full_name;
+        const brandModel = `${c.brand || 'Toyota'} ${c.model || 'Vios'} (${c.color || 'Perak'})`;
+
+        tr.innerHTML = `
+          <td class="p-3 font-mono">
+            <span class="font-bold text-red-950 block">${c.notice_number}</span>
+            <span class="text-[10px] text-slate-400">${new Date(c.issued_at || Date.now()).toLocaleDateString('ms-MY')}</span>
+          </td>
+          <td class="p-3">
+            <span class="font-black text-sm font-mono text-slate-900 block">${c.plate_number}</span>
+            <span class="text-[11px] text-slate-600">${brandModel}</span>
+          </td>
+          <td class="p-3 text-slate-700">
+            <span class="font-semibold block">${c.location_description || 'Zon A (Petak 14)'}</span>
+            <span class="text-[10px] text-slate-400 font-mono">Pegawai: ${c.officer_badge || 'KOP-104'}</span>
+          </td>
+          <td class="p-3">
+            <span class="font-bold text-red-800 block">${c.uuk_code}</span>
+            <span class="text-[10px] text-slate-500">${c.uuk_title || 'Meletak kenderaan tanpa bayaran sah'}</span>
+          </td>
+          <td class="p-3 text-right font-mono font-black text-sm">
+            RM ${parseFloat(c.fine_amount).toFixed(2)}
+          </td>
+          <td class="p-3 text-center">
+            <button onclick="openEvidenceModal('${c.notice_number}', '${c.plate_number}', '${brandModel}')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg font-bold text-[10px] transition">
+              📷 3 Foto & S90A
+            </button>
+          </td>
+          <td class="p-3 text-center">
+            ${hasOffender ? `
+              <div class="text-left font-sans">
+                <span class="font-bold text-slate-900 block text-[11px]">${c.offender_profile.full_name}</span>
+                <span class="text-[10px] text-slate-500 font-mono">${c.offender_profile.ic_number}</span>
+              </div>
+            ` : `
+              <button onclick="openOffenderModal('${c.notice_number}', '${c.plate_number}')" class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg text-[10px] border border-amber-300">
+                ⚠️ Lengkapkan IC/Alamat
+              </button>
+            `}
+          </td>
+          <td class="p-3 text-center">
+            ${isPaid ? `
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+                PAID_HITPAY
+              </span>
+            ` : `
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-100 text-red-800 border border-red-300">
+                UNPAID
+              </span>
+            `}
+          </td>
+          <td class="p-3 text-center">
+            <button onclick="printLegalNotice('${c.notice_number}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-white rounded text-[10px] font-bold" title="Cetak Notis Tuntutan Pos Berdaftar">
+              📄 Notis
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('stat-total-compounds').innerText = list.length;
+      document.getElementById('stat-unpaid-compounds').innerText = unpaid;
+      document.getElementById('stat-paid-compounds').innerText = paid;
+    }
+
+    function filterCompoundsTable() {
+      const query = document.getElementById('compound-search-input').value.toUpperCase();
+      const statusFilter = document.getElementById('compound-status-filter').value;
+
+      const filtered = cachedCompounds.filter(c => {
+        const matchesQuery = c.plate_number.includes(query) || c.notice_number.includes(query);
+        const matchesStatus = (statusFilter === 'ALL') || (c.status === statusFilter);
+        return matchesQuery && matchesStatus;
+      });
+
+      renderCompoundsTable(filtered);
+    }
+
+    function openEvidenceModal(notice, plate, model) {
+      document.getElementById('modal-ev-notice').innerText = notice;
+      document.getElementById('modal-ev-plate').innerText = `${plate} (${model})`;
+      document.getElementById('evidence-modal').classList.remove('hidden');
+    }
+    function closeEvidenceModal() { document.getElementById('evidence-modal').classList.add('hidden'); }
+
+    let currentOffenderNotice = null;
+    function openOffenderModal(notice, plate) {
+      currentOffenderNotice = notice;
+      document.getElementById('modal-offender-notice').innerText = notice;
+      document.getElementById('modal-offender-plate').innerText = plate;
+      document.getElementById('offender-modal').classList.remove('hidden');
+    }
+    function closeOffenderModal() { document.getElementById('offender-modal').classList.add('hidden'); }
+
+    async function handleSaveOffenderProfile(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('offender-fullname').value;
+      const ic = document.getElementById('offender-ic').value;
+      const phone = document.getElementById('offender-phone').value;
+      const address = document.getElementById('offender-address').value;
+      const source = document.getElementById('offender-source').value;
+
+      try {
+        const res = await fetch(`/api/v1/compounds/${currentOffenderNotice}/offender`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            full_name: fullName,
+            ic_number: ic,
+            phone_number: phone,
+            mailing_address: address,
+            data_source: source
+          })
+        });
+        const d = await res.json();
+        alert(`Maklumat Penerima ${fullName} (${ic}) berjaya disimpan bagi Notis ${currentOffenderNotice}!`);
+        closeOffenderModal();
+        loadCompoundsTable();
+      } catch (err) {
+        alert("Ralat mengemaskini maklumat penerima.");
+      }
+    }
+
+    function printLegalNotice(notice) {
+      alert(`Menjana Surat Peringatan Notis Tuntutan Kompaun Berdaftar bagi No. Notis: ${notice}\n\nSedia untuk serahan Pos Laju / Mahkamah Majistret Kuala Klawang.`);
+    }
+
+    async function loadUUKTable() {
+      try {
+        const res = await fetch('/api/v1/uuk/offenses');
+        const list = await res.json();
+        const tbody = document.getElementById('table-uuk-body');
+        tbody.innerHTML = '';
+
+        list.forEach(u => {
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-slate-50 border-b border-slate-100";
+          tr.innerHTML = `
+            <td class="p-3 font-bold font-mono text-red-950">${u.code}</td>
+            <td class="p-3 font-medium text-slate-800">${u.title}</td>
+            <td class="p-3 text-slate-500 font-mono text-[11px]">${u.statutory_act || 'Perintah Tempat Letak Kereta MDJ 2026'}</td>
+            <td class="p-3 text-right font-mono font-black text-slate-900">RM ${parseFloat(u.fine_amount).toFixed(2)}</td>
+            <td class="p-3 text-center"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold text-[10px]">BERWARTA</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error("Gagal muat UUK:", e);
+      }
+    }
+
+    function openAddUUKModal() { document.getElementById('uuk-add-modal').classList.remove('hidden'); }
+    function closeAddUUKModal() { document.getElementById('uuk-add-modal').classList.add('hidden'); }
+
+    async function handleSaveNewUUK(e) {
+      e.preventDefault();
+      const code = document.getElementById('new-uuk-code').value;
+      const title = document.getElementById('new-uuk-title').value;
+      const fine_amount = document.getElementById('new-uuk-amount').value;
+      const statutory_act = document.getElementById('new-uuk-act').value;
+
+      try {
+        const res = await fetch('/api/v1/uuk/offenses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, title, fine_amount, statutory_act })
+        });
+        const d = await res.json();
+        alert(`Kesalahan ${code} berjaya didaftarkan ke dalam warta MDJ!`);
+        closeAddUUKModal();
+        loadUUKTable();
+      } catch (e) {
+        alert("Ralat menambah UUK.");
+      }
+    }
+
+    // 5. Modul Bahagian Teknologi Maklumat (Zon, Pengguna, Resit, Diskaun)
+    async function loadZonesTable() {
+      try {
+        const res = await fetch('/api/v1/zones');
+        const list = await res.json();
+        const tbody = document.getElementById('table-zones-body');
+        tbody.innerHTML = '';
+
+        list.forEach(z => {
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-slate-50 border-b border-slate-100";
+          tr.innerHTML = `
+            <td class="p-3 font-bold font-mono text-slate-900">${z.zone_code}</td>
+            <td class="p-3 font-bold text-slate-800">${z.zone_name}</td>
+            <td class="p-3 text-right font-mono font-bold text-emerald-700">RM ${parseFloat(z.rate_first_hour).toFixed(2)}/jam</td>
+            <td class="p-3 text-right font-mono text-slate-700">RM ${parseFloat(z.monthly_pass_rate || 50).toFixed(2)}</td>
+            <td class="p-3 text-center font-mono font-bold">${z.total_bays || 100}</td>
+            <td class="p-3 font-mono text-[11px] text-slate-500">${z.center_lat ? `${z.center_lat.toFixed(4)}, ${z.center_lng.toFixed(4)}` : '2.9388, 102.0712'}</td>
+            <td class="p-3 text-slate-600">${z.operating_hours || '08:00 AM - 05:00 PM'}</td>
+            <td class="p-3 text-center"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold text-[10px]">AKTIF</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error("Gagal muat zon:", e);
+      }
+    }
+
+    function openAddZoneModal() { document.getElementById('zone-add-modal').classList.remove('hidden'); }
+    function closeAddZoneModal() { document.getElementById('zone-add-modal').classList.add('hidden'); }
+
+    async function handleSaveNewZone(e) {
+      e.preventDefault();
+      const zone_code = document.getElementById('new-zone-code').value;
+      const zone_name = document.getElementById('new-zone-name').value;
+      const rate_first_hour = document.getElementById('new-zone-rate').value;
+      const monthly_pass_rate = document.getElementById('new-zone-monthly').value;
+      const total_bays = document.getElementById('new-zone-bays').value;
+      const operating_hours = document.getElementById('new-zone-hours').value;
+
+      try {
+        const res = await fetch('/api/v1/zones', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ zone_code, zone_name, rate_first_hour, monthly_pass_rate, total_bays, operating_hours })
+        });
+        const d = await res.json();
+        alert(`Zon ${zone_name} (${zone_code}) berjaya ditambah dan dikemaskini ke semua aplikasi!`);
+        closeAddZoneModal();
+        loadZonesTable();
+      } catch (e) {
+        alert("Ralat menambah zon.");
+      }
+    }
+
+    async function loadUsersTable() {
+      try {
+        const res = await fetch('/api/v1/admin/users');
+        const list = await res.json();
+        const tbody = document.getElementById('table-users-body');
+        tbody.innerHTML = '';
+
+        list.forEach(u => {
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-slate-50 border-b border-slate-100";
+          tr.innerHTML = `
+            <td class="p-3 font-bold text-slate-900">${u.full_name}</td>
+            <td class="p-3 font-mono text-red-950 font-bold">${u.badge_number || 'MDJ-01'}</td>
+            <td class="p-3 font-mono text-slate-600">${u.email}</td>
+            <td class="p-3 text-slate-700">${u.department || 'Majlis Daerah Jelebu'}</td>
+            <td class="p-3"><span class="px-2 py-0.5 bg-purple-50 text-purple-800 rounded font-bold text-[10px]">${u.role}</span></td>
+            <td class="p-3 text-center"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold text-[10px]">AKTIF</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error("Gagal muat pengguna:", e);
+      }
+    }
+
+    function openAddUserModal() { document.getElementById('user-add-modal').classList.remove('hidden'); }
+    function closeAddUserModal() { document.getElementById('user-add-modal').classList.add('hidden'); }
+
+    async function handleSaveNewUser(e) {
+      e.preventDefault();
+      const full_name = document.getElementById('new-user-fullname').value;
+      const email = document.getElementById('new-user-email').value;
+      const phone_number = document.getElementById('new-user-phone').value;
+      const role = document.getElementById('new-user-role').value;
+      const badge_number = document.getElementById('new-user-badge').value;
+      const department = document.getElementById('new-user-dept').value;
+
+      try {
+        const res = await fetch('/api/v1/admin/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name, email, phone_number, role, badge_number, department })
+        });
+        const d = await res.json();
+        alert(`Pegawai ${full_name} berjaya didaftarkan!`);
+        closeAddUserModal();
+        loadUsersTable();
+      } catch (e) {
+        alert("Ralat menambah pengguna.");
+      }
+    }
+
+    async function handleToggleDiscountCampaign() {
+      const ok = confirm("Pengesahan Integriti MDJ:\nAdakah minit mesyuarat kelulusan Ketua Jabatan telah diperolehi untuk mengubah status suis diskaun kompaun?");
+      if (!ok) return;
+
+      try {
+        const res = await fetch('/api/v1/admin/discount/toggle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ approved_by: activeUser ? activeUser.full_name : "Pegawai Berkuasa", reference: "MDJ/KJD/MESY-BIL.4/2026" })
+        });
+        const d = await res.json();
+        const pill = document.getElementById('discount-status-pill');
+        if (d.campaign.is_enabled) {
+          pill.className = "px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800";
+          pill.innerText = "AKTIF (BERKUAT KUASA)";
+        } else {
+          pill.className = "px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-100 text-red-800";
+          pill.innerText = "TIDAK AKTIF (LOCKED)";
+        }
+        alert(d.message);
+      } catch (e) {
+        alert("Ralat mengubah status diskaun.");
+      }
+    }
+
+    function updateLiveReceiptPreview(size) {
+      const receipt = document.getElementById('live-thermal-receipt');
+      const badge = document.getElementById('preview-paper-badge');
+      const l58 = document.getElementById('label-setting-58');
+      const l80 = document.getElementById('label-setting-80');
+
+      if (size === '80mm') {
+        receipt.className = "thermal-receipt p-3 rounded text-slate-900 text-xs shadow w-[310px] space-y-1.5";
+        badge.innerText = "80mm ESC/POS (Lebar)";
+        l80.className = "border-2 border-red-900 bg-red-50 p-2 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer";
+        l58.className = "border border-slate-300 p-2 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer";
+      } else {
+        receipt.className = "thermal-receipt p-3 rounded text-slate-900 text-xs shadow w-[250px] space-y-1.5";
+        badge.innerText = "58mm ESC/POS (Poket)";
+        l58.className = "border-2 border-red-900 bg-red-50 p-2 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer";
+        l80.className = "border border-slate-300 p-2 rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer";
+      }
+
+      document.getElementById('prev-title').innerText = document.getElementById('setting-notice-title').value;
+      document.getElementById('prev-act').innerText = document.getElementById('setting-statutory-act').value;
+      document.getElementById('prev-warning').innerText = document.getElementById('setting-warning-text').value;
+    }
+
+    async function handleSaveReceiptSettings(e) {
+      e.preventDefault();
+      const paper_size = document.querySelector('input[name="setting_paper_size"]:checked').value;
+      const notice_title = document.getElementById('setting-notice-title').value;
+      const statutory_act = document.getElementById('setting-statutory-act').value;
+      const payment_due_days = document.getElementById('setting-due-days').value;
+      const contact_phone = document.getElementById('setting-phone').value;
+      const footer_warning = document.getElementById('setting-warning-text').value;
+
+      try {
+        const res = await fetch('/api/v1/admin/receipt-settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paper_size, notice_title, statutory_act, payment_due_days, contact_phone, footer_warning })
+        });
+        const d = await res.json();
+        alert("Tetapan reka bentuk resit kompaun berjaya disimpan!");
+        updateLiveReceiptPreview(paper_size);
+      } catch (err) {
+        alert("Ralat menyimpan tetapan.");
+      }
+    }
+
+    // =========================================================================
+    // 6. MODUL LAPORAN KEWANGAN: PENJANAAN MENGIKUT BULAN / TAHUN / PEGAWAI     //
+    // =========================================================================
+    const masterFinanceRecords = [
+      // 2026 - November (Semasa)
+      { year: "2026", month: "November", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 240, parking_amount: 1440.00, compound_amount: 450.00, status: "SETTLED" },
+      { year: "2026", month: "November", officer: "Farhan", officer_name: "Kpl. Mohd Farhan bin Daud (KOP-108)", zone: "Zon B - Simpang Pertang", tx_count: 180, parking_amount: 1080.00, compound_amount: 350.00, status: "SETTLED" },
+      { year: "2026", month: "November", officer: "Siti Hajar", officer_name: "L/Kpl. Siti Hajar binti Ramli (KOP-112)", zone: "Zon C - Pekan Titi / Pasar", tx_count: 140, parking_amount: 840.00, compound_amount: 250.00, status: "SETTLED" },
+      { year: "2026", month: "November", officer: "Rosli", officer_name: "Insp. Rosli bin Daud (KOP-001)", zone: "Zon Khas - Hospital Jelebu & Stesen Bas", tx_count: 80, parking_amount: 480.00, compound_amount: 150.00, status: "SETTLED" },
+      
+      // 2026 - Oktober
+      { year: "2026", month: "Oktober", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 310, parking_amount: 1860.00, compound_amount: 600.00, status: "SETTLED" },
+      { year: "2026", month: "Oktober", officer: "Farhan", officer_name: "Kpl. Mohd Farhan bin Daud (KOP-108)", zone: "Zon B - Simpang Pertang", tx_count: 260, parking_amount: 1560.00, compound_amount: 500.00, status: "SETTLED" },
+      { year: "2026", month: "Oktober", officer: "Siti Hajar", officer_name: "L/Kpl. Siti Hajar binti Ramli (KOP-112)", zone: "Zon C - Pekan Titi / Pasar", tx_count: 210, parking_amount: 1260.00, compound_amount: 400.00, status: "SETTLED" },
+      { year: "2026", month: "Oktober", officer: "Rosli", officer_name: "Insp. Rosli bin Daud (KOP-001)", zone: "Zon Khas - Hospital Jelebu & Stesen Bas", tx_count: 120, parking_amount: 720.00, compound_amount: 250.00, status: "SETTLED" },
+
+      // 2026 - September
+      { year: "2026", month: "September", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 290, parking_amount: 1740.00, compound_amount: 550.00, status: "SETTLED" },
+      { year: "2026", month: "September", officer: "Farhan", officer_name: "Kpl. Mohd Farhan bin Daud (KOP-108)", zone: "Zon B - Simpang Pertang", tx_count: 240, parking_amount: 1440.00, compound_amount: 450.00, status: "SETTLED" },
+      { year: "2026", month: "September", officer: "Siti Hajar", officer_name: "L/Kpl. Siti Hajar binti Ramli (KOP-112)", zone: "Zon C - Pekan Titi / Pasar", tx_count: 190, parking_amount: 1140.00, compound_amount: 350.00, status: "SETTLED" },
+      { year: "2026", month: "September", officer: "Rosli", officer_name: "Insp. Rosli bin Daud (KOP-001)", zone: "Zon Khas - Hospital Jelebu & Stesen Bas", tx_count: 110, parking_amount: 660.00, compound_amount: 200.00, status: "SETTLED" },
+
+      // 2026 - Ogos
+      { year: "2026", month: "Ogos", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 320, parking_amount: 1920.00, compound_amount: 650.00, status: "SETTLED" },
+      { year: "2026", month: "Ogos", officer: "Farhan", officer_name: "Kpl. Mohd Farhan bin Daud (KOP-108)", zone: "Zon B - Simpang Pertang", tx_count: 270, parking_amount: 1620.00, compound_amount: 500.00, status: "SETTLED" },
+      { year: "2026", month: "Ogos", officer: "Siti Hajar", officer_name: "L/Kpl. Siti Hajar binti Ramli (KOP-112)", zone: "Zon C - Pekan Titi / Pasar", tx_count: 220, parking_amount: 1320.00, compound_amount: 450.00, status: "SETTLED" },
+      { year: "2026", month: "Ogos", officer: "Rosli", officer_name: "Insp. Rosli bin Daud (KOP-001)", zone: "Zon Khas - Hospital Jelebu & Stesen Bas", tx_count: 130, parking_amount: 780.00, compound_amount: 300.00, status: "SETTLED" },
+
+      // 2026 - Julai
+      { year: "2026", month: "Julai", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 305, parking_amount: 1830.00, compound_amount: 580.00, status: "SETTLED" },
+      { year: "2026", month: "Julai", officer: "Farhan", officer_name: "Kpl. Mohd Farhan bin Daud (KOP-108)", zone: "Zon B - Simpang Pertang", tx_count: 250, parking_amount: 1500.00, compound_amount: 480.00, status: "SETTLED" },
+
+      // 2026 - Jun
+      { year: "2026", month: "Jun", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 280, parking_amount: 1680.00, compound_amount: 520.00, status: "SETTLED" },
+      { year: "2026", month: "Jun", officer: "Farhan", officer_name: "Kpl. Mohd Farhan bin Daud (KOP-108)", zone: "Zon B - Simpang Pertang", tx_count: 230, parking_amount: 1380.00, compound_amount: 420.00, status: "SETTLED" },
+
+      // 2026 - Mei
+      { year: "2026", month: "Mei", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 315, parking_amount: 1890.00, compound_amount: 600.00, status: "SETTLED" },
+      { year: "2026", month: "Mei", officer: "Siti Hajar", officer_name: "L/Kpl. Siti Hajar binti Ramli (KOP-112)", zone: "Zon C - Pekan Titi / Pasar", tx_count: 210, parking_amount: 1260.00, compound_amount: 380.00, status: "SETTLED" },
+
+      // 2026 - April
+      { year: "2026", month: "April", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 260, parking_amount: 1560.00, compound_amount: 480.00, status: "SETTLED" },
+      { year: "2026", month: "April", officer: "Farhan", officer_name: "Kpl. Mohd Farhan bin Daud (KOP-108)", zone: "Zon B - Simpang Pertang", tx_count: 220, parking_amount: 1320.00, compound_amount: 400.00, status: "SETTLED" },
+
+      // 2026 - Mac
+      { year: "2026", month: "Mac", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 275, parking_amount: 1650.00, compound_amount: 500.00, status: "SETTLED" },
+      { year: "2026", month: "Mac", officer: "Siti Hajar", officer_name: "L/Kpl. Siti Hajar binti Ramli (KOP-112)", zone: "Zon C - Pekan Titi / Pasar", tx_count: 200, parking_amount: 1200.00, compound_amount: 350.00, status: "SETTLED" },
+
+      // 2026 - Februari
+      { year: "2026", month: "Februari", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 250, parking_amount: 1500.00, compound_amount: 460.00, status: "SETTLED" },
+      { year: "2026", month: "Februari", officer: "Farhan", officer_name: "Kpl. Mohd Farhan bin Daud (KOP-108)", zone: "Zon B - Simpang Pertang", tx_count: 210, parking_amount: 1260.00, compound_amount: 380.00, status: "SETTLED" },
+
+      // 2026 - Januari
+      { year: "2026", month: "Januari", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 290, parking_amount: 1740.00, compound_amount: 550.00, status: "SETTLED" },
+      { year: "2026", month: "Januari", officer: "Farhan", officer_name: "Kpl. Mohd Farhan bin Daud (KOP-108)", zone: "Zon B - Simpang Pertang", tx_count: 240, parking_amount: 1440.00, compound_amount: 440.00, status: "SETTLED" },
+      { year: "2026", month: "Januari", officer: "Siti Hajar", officer_name: "L/Kpl. Siti Hajar binti Ramli (KOP-112)", zone: "Zon C - Pekan Titi / Pasar", tx_count: 190, parking_amount: 1140.00, compound_amount: 350.00, status: "SETTLED" },
+      { year: "2026", month: "Januari", officer: "Rosli", officer_name: "Insp. Rosli bin Daud (KOP-001)", zone: "Zon Khas - Hospital Jelebu & Stesen Bas", tx_count: 100, parking_amount: 600.00, compound_amount: 180.00, status: "SETTLED" },
+
+      // 2025 - Rekod Arkib Tahun Sebelumnya
+      { year: "2025", month: "Disember", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 330, parking_amount: 1980.00, compound_amount: 620.00, status: "SETTLED" },
+      { year: "2025", month: "Disember", officer: "Farhan", officer_name: "Kpl. Mohd Farhan bin Daud (KOP-108)", zone: "Zon B - Simpang Pertang", tx_count: 280, parking_amount: 1680.00, compound_amount: 530.00, status: "SETTLED" },
+      { year: "2025", month: "November", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 300, parking_amount: 1800.00, compound_amount: 580.00, status: "SETTLED" },
+      { year: "2025", month: "Oktober", officer: "Zulkifli", officer_name: "Sjn. Zulkifli bin Ismail (KOP-104)", zone: "Zon A - Pekan Kuala Klawang", tx_count: 290, parking_amount: 1740.00, compound_amount: 540.00, status: "SETTLED" }
+    ];
+
+    function initFinanceReporting() {
+      applyFinanceFilters();
+    }
+
+    // Fungsi Utama: Semak Laporan Apabila Pengguna Menekan Butang "🔍 Semak Laporan"
+    function handleSemakLaporan() {
+      const btn = document.getElementById('btn-semak-laporan');
+      const btnText = document.getElementById('btn-semak-text');
+      const statusPill = document.getElementById('fin-status-pill');
+
+      if (btn && btnText) {
+        btnText.innerText = "Menyemak...";
+        btn.classList.add('opacity-80', 'scale-95');
+      }
+
+      setTimeout(() => {
+        const recordsCount = applyFinanceFilters();
+
+        if (btn && btnText) {
+          btnText.innerText = "✓ Disemak!";
+          btn.classList.remove('opacity-80', 'scale-95');
+          btn.classList.add('bg-emerald-700');
+        }
+
+        if (statusPill) {
+          statusPill.innerHTML = `✓ Rekod Disahkan: ${recordsCount} data dijumpai`;
+          statusPill.className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 transition";
+        }
+
+        setTimeout(() => {
+          if (btnText) btnText.innerText = "Semak Laporan";
+          if (btn) btn.classList.remove('bg-emerald-700');
+        }, 1800);
+      }, 200);
+    }
+
+    // Fungsi Saringan Data Kewangan
+    function applyFinanceFilters() {
+      const yearFilter = document.getElementById('fin-filter-year') ? document.getElementById('fin-filter-year').value : '2026';
+      const monthFilter = document.getElementById('fin-filter-month') ? document.getElementById('fin-filter-month').value : 'November';
+      const officerFilter = document.getElementById('fin-filter-officer') ? document.getElementById('fin-filter-officer').value : 'ALL';
+      const catFilter = document.getElementById('fin-filter-category') ? document.getElementById('fin-filter-category').value : 'ALL';
+
+      // Kemas kini teks ringkasan
+      const summaryText = `Memaparkan laporan: Tahun [${yearFilter === 'ALL' ? 'Semua' : yearFilter}] &bull; Bulan [${monthFilter === 'ALL' ? 'Semua' : monthFilter}] &bull; Pegawai [${officerFilter === 'ALL' ? 'Semua' : officerFilter}] &bull; Kategori [${catFilter === 'ALL' ? 'Semua Hasil' : catFilter === 'PARKING_ONLY' ? 'Parkir Sahaja' : 'Kompaun Sahaja'}]`;
+      const summaryEl = document.getElementById('fin-filter-summary');
+      if (summaryEl) summaryEl.innerHTML = summaryText;
+
+      // Tapis data dari arkib rekod
+      const filtered = masterFinanceRecords.filter(r => {
+        const matchesYear = (yearFilter === 'ALL') || (r.year === yearFilter);
+        const matchesMonth = (monthFilter === 'ALL') || (r.month === monthFilter);
+        const matchesOfficer = (officerFilter === 'ALL') || (r.officer === officerFilter);
+        return matchesYear && matchesMonth && matchesOfficer;
+      });
+
+      renderFinanceReportTable(filtered, catFilter);
+      return filtered.length;
+    }
+
+    // Set Semula Parameter Penapis
+    function resetFinanceFilters() {
+      if (document.getElementById('fin-filter-year')) document.getElementById('fin-filter-year').value = '2026';
+      if (document.getElementById('fin-filter-month')) document.getElementById('fin-filter-month').value = 'November';
+      if (document.getElementById('fin-filter-officer')) document.getElementById('fin-filter-officer').value = 'ALL';
+      if (document.getElementById('fin-filter-category')) document.getElementById('fin-filter-category').value = 'ALL';
+      
+      const statusPill = document.getElementById('fin-status-pill');
+      if (statusPill) {
+        statusPill.innerHTML = "✓ Penapis Ditetapkan Semula";
+        statusPill.className = "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-800";
+      }
+
+      applyFinanceFilters();
+    }
+
+    // Dapatkan Rekod Semasa Mengikut Penapis Aktif
+    function getFilteredFinanceRecords() {
+      const yearFilter = document.getElementById('fin-filter-year') ? document.getElementById('fin-filter-year').value : '2026';
+      const monthFilter = document.getElementById('fin-filter-month') ? document.getElementById('fin-filter-month').value : 'November';
+      const officerFilter = document.getElementById('fin-filter-officer') ? document.getElementById('fin-filter-officer').value : 'ALL';
+      const catFilter = document.getElementById('fin-filter-category') ? document.getElementById('fin-filter-category').value : 'ALL';
+
+      const filtered = masterFinanceRecords.filter(r => {
+        const matchesYear = (yearFilter === 'ALL') || (r.year === yearFilter);
+        const matchesMonth = (monthFilter === 'ALL') || (r.month === monthFilter);
+        const matchesOfficer = (officerFilter === 'ALL') || (r.officer === officerFilter);
+        return matchesYear && matchesMonth && matchesOfficer;
+      });
+
+      return { filtered, yearFilter, monthFilter, officerFilter, catFilter };
+    }
+
+    // Fungsi Muat Turun Fail Excel / CSV (Disertakan UTF-8 BOM untuk Microsoft Excel)
+    function downloadFinanceCSV() {
+      const { filtered, yearFilter, monthFilter, officerFilter, catFilter } = getFilteredFinanceRecords();
+
+      if (filtered.length === 0) {
+        alert("Tiada rekod kewangan dijumpai bagi kriteria penapis yang dipilih untuk dieksport.");
+        return;
+      }
+
+      let csv = "\uFEFF"; // Byte Order Mark untuk UTF-8 sokongan penuh Excel
+      csv += "MAJLIS DAERAH JELEBU - SISTEM EZ PARK JELEBU\n";
+      csv += "PENYATA LAPORAN HASIL KUTIPAN TEMPAT LETAK KERETA & KOMPAUN\n";
+      csv += `Tarikh Dijana:,"${new Date().toLocaleDateString('ms-MY')} ${new Date().toLocaleTimeString('ms-MY')}"\n`;
+      csv += `Tahun:,"${yearFilter}",Bulan:,"${monthFilter}",Pegawai:,"${officerFilter}",Kategori:,"${catFilter}"\n\n`;
+
+      csv += "Tahun,Bulan,Nama Pegawai Penguatkuasa,Zon Penugasan,Bil Transaksi,Kutipan Parkir (RM),Kutipan Kompaun (RM),Jumlah Kutipan (RM),Status\n";
+
+      let sumTx = 0;
+      let sumPark = 0;
+      let sumComp = 0;
+      let sumTotal = 0;
+
+      filtered.forEach(r => {
+        const park = (catFilter === 'COMPOUND_ONLY') ? 0 : r.parking_amount;
+        const comp = (catFilter === 'PARKING_ONLY') ? 0 : r.compound_amount;
+        const total = park + comp;
+
+        sumTx += r.tx_count;
+        sumPark += park;
+        sumComp += comp;
+        sumTotal += total;
+
+        csv += `"${r.year}","${r.month}","${r.officer_name.replace(/"/g, '""')}","${r.zone.replace(/"/g, '""')}",${r.tx_count},${park.toFixed(2)},${comp.toFixed(2)},${total.toFixed(2)},"SETTLED"\n`;
+      });
+
+      csv += `\n"JUMLAH KESELURUHAN HASIL","","","",${sumTx},${sumPark.toFixed(2)},${sumComp.toFixed(2)},${sumTotal.toFixed(2)},"SELESAI"\n`;
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const cleanFileName = `Laporan_Hasil_MDJ_${yearFilter}_${monthFilter}_${Date.now()}.csv`;
+      link.setAttribute("href", url);
+      link.setAttribute("download", cleanFileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    // Fungsi Cetak & Eksport PDF Rasmi Kerajaan MDJ
+    function exportFinanceReport(mode) {
+      const { filtered, yearFilter, monthFilter, officerFilter, catFilter } = getFilteredFinanceRecords();
+
+      let sumTx = 0;
+      let sumPark = 0;
+      let sumComp = 0;
+      let sumTotal = 0;
+
+      let tableRows = '';
+      if (filtered.length === 0) {
+        tableRows = `<tr><td colspan="9" style="padding: 20px; text-align: center; color: #64748b; font-style: italic;">Tiada rekod dijumpai bagi kriteria penapis yang dipilih.</td></tr>`;
+      } else {
+        filtered.forEach((r, idx) => {
+          const park = (catFilter === 'COMPOUND_ONLY') ? 0 : r.parking_amount;
+          const comp = (catFilter === 'PARKING_ONLY') ? 0 : r.compound_amount;
+          const total = park + comp;
+
+          sumTx += r.tx_count;
+          sumPark += park;
+          sumComp += comp;
+          sumTotal += total;
+
+          tableRows += `
+            <tr style="border-bottom: 1px solid #e2e8f0; font-size: 11px;">
+              <td style="padding: 8px 10px; text-align: center;">${idx + 1}</td>
+              <td style="padding: 8px 10px; font-weight: bold; color: #0f172a;">${r.year} - ${r.month}</td>
+              <td style="padding: 8px 10px; font-weight: 600; color: #1e293b;">${r.officer_name}</td>
+              <td style="padding: 8px 10px; color: #475569;">${r.zone}</td>
+              <td style="padding: 8px 10px; text-align: center; font-weight: bold; font-family: monospace;">${r.tx_count}</td>
+              <td style="padding: 8px 10px; text-align: right; color: #047857; font-weight: bold; font-family: monospace;">${park > 0 ? 'RM ' + park.toFixed(2) : '-'}</td>
+              <td style="padding: 8px 10px; text-align: right; color: #b91c1c; font-weight: bold; font-family: monospace;">${comp > 0 ? 'RM ' + comp.toFixed(2) : '-'}</td>
+              <td style="padding: 8px 10px; text-align: right; font-weight: 900; color: #0f172a; font-family: monospace;">RM ${total.toFixed(2)}</td>
+              <td style="padding: 8px 10px; text-align: center;"><span style="background: #dcfce7; color: #166534; font-size: 9px; font-weight: bold; padding: 2px 7px; border-radius: 9999px;">SETTLED</span></td>
+            </tr>
+          `;
+        });
+      }
+
+      const printWindow = window.open('', '_blank');
+      const now = new Date();
+      const printDateStr = now.toLocaleDateString('ms-MY', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const printTimeStr = now.toLocaleTimeString('ms-MY');
+
+      const html = `
+        <!DOCTYPE html>
+        <html lang="ms">
+        <head>
+          <meta charset="UTF-8">
+          <title>Laporan Hasil Kewangan - Majlis Daerah Jelebu</title>
+          <style>
+            @page {
+              size: A4 landscape;
+              margin: 12mm;
+            }
+            body {
+              font-family: Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              color: #1e293b;
+              margin: 0;
+              padding: 12px;
+              background: #fff;
+            }
+            .header-box {
+              display: flex;
+              align-items: center;
+              border-bottom: 3px double #7f1d1d;
+              padding-bottom: 12px;
+              margin-bottom: 14px;
+            }
+            .header-box img {
+              height: 64px;
+              width: auto;
+              margin-right: 18px;
+            }
+            .kpi-grid {
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 12px;
+              margin: 14px 0;
+            }
+            .kpi-card {
+              border: 1px solid #cbd5e1;
+              border-radius: 8px;
+              padding: 10px 14px;
+              background: #f8fafc;
+            }
+            .kpi-card-total {
+              background: #f0fdf4;
+              border-color: #86efac;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+            }
+            th {
+              background: #1e293b;
+              color: #ffffff;
+              font-size: 11px;
+              padding: 9px 10px;
+              text-align: left;
+            }
+            .footer-signatures {
+              margin-top: 40px;
+              display: flex;
+              justify-content: space-between;
+              page-break-inside: avoid;
+            }
+            .sign-box {
+              width: 250px;
+              text-align: center;
+              font-size: 11px;
+            }
+            .sign-line {
+              border-bottom: 1px solid #334155;
+              height: 55px;
+              margin-bottom: 6px;
+            }
+            @media print {
+              .no-print { display: none !important; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="no-print" style="margin-bottom: 15px; padding: 12px 16px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; font-weight: bold; color: #0f172a;">
+              <span>Dokumen Rasmi Majlis Daerah Jelebu (${mode === 'pdf' ? 'Muat Turun / Simpan PDF' : 'Cetak Dokumen'})</span>
+              <p style="margin: 2px 0 0 0; font-size: 11px; color: #64748b; font-weight: normal;">Tekan butang Cetak di sebelah untuk mencetak atau memilih "Save as PDF" / "Simpan sebagai PDF".</p>
+            </div>
+            <div>
+              <button onclick="window.print()" style="background: #7f1d1d; color: white; border: none; padding: 9px 18px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; margin-right: 8px;">🖨️ Cetak / Simpan PDF</button>
+              <button onclick="window.close()" style="background: #64748b; color: white; border: none; padding: 9px 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;">Tutup</button>
+            </div>
+          </div>
+
+          <div class="header-box">
+            <img src="/logo_mdj.jpg" alt="Logo MDJ" onerror="this.style.display='none'">
+            <div>
+              <h2 style="margin: 0; font-size: 18px; font-weight: 900; color: #0f172a; letter-spacing: 0.5px;">MAJLIS DAERAH JELEBU</h2>
+              <h3 style="margin: 2px 0; font-size: 13px; font-weight: 700; color: #7f1d1d;">BAHAGIAN KEWANGAN & JABATAN PENGUATKUASAAN</h3>
+              <p style="margin: 0; font-size: 11px; color: #475569;">Sistem Pengurusan Tempat Letak Kereta Berpusat (EZ Park - Jelebu) &bull; Dokumen Rasmi Penyata Kutipan</p>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; font-size: 11px; margin-bottom: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <div>
+              <div style="margin-bottom: 3px;"><strong>Tajuk Laporan:</strong> Penyata Kutipan Hasil Sesi Parkir & Kompaun</div>
+              <div><strong>Kriteria Penapis:</strong> Tahun: ${yearFilter === 'ALL' ? 'Semua Tahun' : yearFilter} &bull; Bulan: ${monthFilter === 'ALL' ? 'Semua Bulan' : monthFilter} &bull; Pegawai: ${officerFilter === 'ALL' ? 'Semua Pegawai Lapangan' : officerFilter} &bull; Kategori: ${catFilter === 'ALL' ? 'Semua Hasil (Parkir & Kompaun)' : catFilter === 'PARKING_ONLY' ? 'Parkir Sahaja' : 'Kompaun Sahaja'}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="margin-bottom: 3px;"><strong>Tarikh Dijana:</strong> ${printDateStr} (${printTimeStr})</div>
+              <div><strong>Pegawai Bertugas:</strong> ${activeUser ? activeUser.name : 'Insp. Rosli bin Daud'} (${activeUser ? activeUser.department : 'Jabatan Penguatkuasaan'})</div>
+            </div>
+          </div>
+
+          <!-- Kad Ringkasan Metrik Kewangan -->
+          <div class="kpi-grid">
+            <div class="kpi-card kpi-card-total">
+              <div style="font-size: 10px; font-weight: bold; color: #15803d; text-transform: uppercase;">Jumlah Keseluruhan Kutipan</div>
+              <div style="font-size: 21px; font-weight: 900; color: #166534; font-family: monospace; margin-top: 3px;">RM ${sumTotal.toFixed(2)}</div>
+            </div>
+            <div class="kpi-card">
+              <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Hasil Sesi Parkir</div>
+              <div style="font-size: 21px; font-weight: 900; color: #047857; font-family: monospace; margin-top: 3px;">RM ${sumPark.toFixed(2)}</div>
+            </div>
+            <div class="kpi-card">
+              <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Hasil Bayaran Kompaun</div>
+              <div style="font-size: 21px; font-weight: 900; color: #b91c1c; font-family: monospace; margin-top: 3px;">RM ${sumComp.toFixed(2)}</div>
+            </div>
+            <div class="kpi-card">
+              <div style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase;">Bilangan Transaksi</div>
+              <div style="font-size: 21px; font-weight: 900; color: #2563eb; font-family: monospace; margin-top: 3px;">${sumTx} Kutipan</div>
+            </div>
+          </div>
+
+          <!-- Jadual Perincian Mengikut Pegawai & Zon -->
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 35px; text-align: center;">BIL</th>
+                <th>TAHUN / BULAN</th>
+                <th>NAMA PEGAWAI PENGUATKUASA</th>
+                <th>ZON PENUGASAN</th>
+                <th style="text-align: center;">BIL TRANSAKSI</th>
+                <th style="text-align: right;">KUTIPAN PARKIR (RM)</th>
+                <th style="text-align: right;">KUTIPAN KOMPAUN (RM)</th>
+                <th style="text-align: right;">JUMLAH HASIL (RM)</th>
+                <th style="text-align: center;">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+            <tfoot>
+              <tr style="background: #f1f5f9; font-weight: 900; font-size: 11px; border-top: 2px solid #0f172a; border-bottom: 2px solid #0f172a;">
+                <td colspan="4" style="padding: 10px; text-align: right; text-transform: uppercase;">JUMLAH KESELURUHAN HASIL KUTIPAN:</td>
+                <td style="padding: 10px; text-align: center; font-family: monospace;">${sumTx}</td>
+                <td style="padding: 10px; text-align: right; color: #047857; font-family: monospace;">RM ${sumPark.toFixed(2)}</td>
+                <td style="padding: 10px; text-align: right; color: #b91c1c; font-family: monospace;">RM ${sumComp.toFixed(2)}</td>
+                <td style="padding: 10px; text-align: right; color: #0f172a; font-size: 13px; font-family: monospace;">RM ${sumTotal.toFixed(2)}</td>
+                <td style="padding: 10px; text-align: center; color: #166534;">SELESAI</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <!-- Tandatangan Pengesahan Rasmi -->
+          <div class="footer-signatures">
+            <div class="sign-box">
+              <div>Disediakan Oleh:</div>
+              <div class="sign-line"></div>
+              <strong>${activeUser ? activeUser.name : 'Insp. Rosli bin Daud'}</strong>
+              <div>Pegawai Penyelaras EZ Park</div>
+              <div>Majlis Daerah Jelebu</div>
+            </div>
+            <div class="sign-box">
+              <div>Disemak Oleh:</div>
+              <div class="sign-line"></div>
+              <strong>Faridah binti Othman</strong>
+              <div>Pegawai Kewangan MDJ</div>
+              <div>Bahagian Kewangan & Belanjawan</div>
+            </div>
+            <div class="sign-box">
+              <div>Disahkan & Diluluskan Oleh:</div>
+              <div class="sign-line"></div>
+              <strong>Yang Dipertua / Setiausaha</strong>
+              <div>Majlis Daerah Jelebu</div>
+              <div>(Cop Rasmi Jabatan)</div>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    }
+
+    function renderFinanceReportTable(records, catFilter) {
+      const tbody = document.getElementById('table-finance-report-body');
+      tbody.innerHTML = '';
+
+      let totalTx = 0;
+      let totalParking = 0;
+      let totalCompound = 0;
+      let totalNet = 0;
+
+      if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 font-sans italic">Tiada rekod kewangan dijumpai bagi kriteria penapis yang dipilih.</td></tr>`;
+      } else {
+        records.forEach(r => {
+          let park = (catFilter === 'COMPOUND_ONLY') ? 0 : r.parking_amount;
+          let comp = (catFilter === 'PARKING_ONLY') ? 0 : r.compound_amount;
+          let net = park + comp;
+
+          totalTx += r.tx_count;
+          totalParking += park;
+          totalCompound += comp;
+          totalNet += net;
+
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-slate-50 border-b border-slate-100 transition";
+          tr.innerHTML = `
+            <td class="p-3 font-bold text-slate-900">${r.year} - ${r.month}</td>
+            <td class="p-3 font-sans font-bold text-slate-800">${r.officer_name}</td>
+            <td class="p-3 font-sans text-slate-600">${r.zone}</td>
+            <td class="p-3 text-center font-bold">${r.tx_count}</td>
+            <td class="p-3 text-right text-emerald-700 font-bold">${park > 0 ? `RM ${park.toFixed(2)}` : '-'}</td>
+            <td class="p-3 text-right text-red-700 font-bold">${comp > 0 ? `RM ${comp.toFixed(2)}` : '-'}</td>
+            <td class="p-3 text-right text-slate-900 font-black text-sm">RM ${net.toFixed(2)}</td>
+            <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-sans font-bold bg-emerald-100 text-emerald-800">SETTLED</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Kemas kini Kaki Jadual (Totals)
+      document.getElementById('foot-total-tx').innerText = totalTx;
+      document.getElementById('foot-total-parking').innerText = `RM ${totalParking.toFixed(2)}`;
+      document.getElementById('foot-total-compound').innerText = `RM ${totalCompound.toFixed(2)}`;
+      document.getElementById('foot-total-net').innerText = `RM ${totalNet.toFixed(2)}`;
+
+      // Kemas kini 4 Kad KPI Teratas
+      document.getElementById('fin-kpi-total').innerText = `RM ${totalNet.toFixed(2)}`;
+      document.getElementById('fin-kpi-parking').innerText = `RM ${totalParking.toFixed(2)}`;
+      document.getElementById('fin-kpi-compound').innerText = `RM ${totalCompound.toFixed(2)}`;
+      document.getElementById('fin-kpi-count').innerText = totalTx;
+      document.getElementById('fin-row-count-badge').innerText = `${records.length} Rekod`;
+    }
+
+    // Inisialisasi awal (Semak Sesi Pengguna)
+    window.onload = () => {
+      const savedUser = sessionStorage.getItem('ezpark_admin_user');
+      if (savedUser) {
+        try {
+          activeUser = JSON.parse(savedUser);
+          applyUserSession(activeUser);
+          showDashboardView();
+        } catch (e) {
+          showLoginView();
+        }
+      } else {
+        showLoginView();
+      }
+    };
+  </script>
+</body>
+</html>
